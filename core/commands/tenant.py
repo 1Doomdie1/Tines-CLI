@@ -26,7 +26,7 @@ def checkout(
 ):
     TenantManager.checkout_tenant(domain)
 
-@app.command(help="Switch to other tenants")
+@app.command(help="Show all teams in the tenant")
 def teams():
     TABLE = Table()
     TEAMS = TenantManager.tenant_teams()
