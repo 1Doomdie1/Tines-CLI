@@ -53,3 +53,34 @@ class WorkflowManager:
             CONSOLE.log("Error encountered")
             CONSOLE.log(f'Message: [bold red]{req["data"][0]}[/bold red]')
         return
+
+    @staticmethod
+    def list_workflows(
+        team_id:   int,
+        folder_id: int,
+        per_page:  int,
+        page:      int,
+        tags:      str,
+        filter:    str,
+        order:     str
+    ) -> list:
+        
+        DATA = {
+            "team_id":   team_id,
+            "folder_id": folder_id,
+            "per_page":  per_page,
+            "page":      page,
+            "tags":      tags,
+            "filter":    filter,
+            "order":     order
+        }
+
+        req = TenantManager.enpoint_call(
+            "GET",
+            "api/v1/stories",
+            json=DATA
+        )
+
+        if req["status_code"] == 200:
+            if not req["data"]["stories"]: CONSOLE.log("No workflows found"); exit()
+            return req["data"]["stories"]
