@@ -35,7 +35,7 @@ class WorkflowManager:
             "description":     description,
             "keep_events_for": TIME_PERIODS[keep_events_for],
             "folder_id":       folder_id,
-            "tags":            tags.split(","),
+            "tags":            tags.split(",") if tags else None,
             "disabled":        disabled,
             "priority":        priority
         }
