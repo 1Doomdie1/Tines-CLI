@@ -12,7 +12,7 @@ def create(
     description:     Annotated[str,                  Option  (..., help="A user-defined description of the story"                                       )] = "Created with tines_cli",
     keep_events_for: Annotated[keep_events_for_type, Option  (..., help="Event retention period"                                                        )] = keep_events_for_type._1d,
     folder_id:       Annotated[int | None,           Option  (..., help="ID of folder to which the story should be added"                               )] = None,
-    tags:            Annotated[str,                  Option  (..., help="An array of Strings separated by ',' used to create tags to classify the story")] = "",
+    tags:            Annotated[str | None,           Option  (..., help="An array of Strings separated by ',' used to create tags to classify the story")] = None,
     disabled:        Annotated[bool,                 Option  (..., help="Boolean flag indicating whether the story is disabled"                         )] = False,
     priority:        Annotated[bool,                 Option  (..., help="Boolean flag indicating if this is a high priority story"                      )] = False
 ):
