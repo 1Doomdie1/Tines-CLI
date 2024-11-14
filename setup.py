@@ -1,15 +1,19 @@
-from rich    import print
-from os.path import exists
-from os      import makedirs
+from setuptools import setup, find_packages
 
-if __name__ == "__main__":    
-    # Create .env file
-    if not exists(".env"):
-        print("[[bold green]+[/bold green]] Creating '.env' file")
-        with open(".env", "w") as dotenv:
-            dotenv.writelines(["TENANT_DOMAIN="])
+# Function to read requirements from requirements.txt
+def load_requirements(filename="requirements.txt"):
+    with open(filename, "r") as file:
+        return file.read().splitlines()
 
-    # Create tenants folder
-    if not exists("tenants"):
-        print("[[bold green]+[/bold green]] Creating 'tenants' folder")
-        makedirs("tenants")
+setup(
+    name="tines-cli",
+    version="0.1",
+    packages=find_packages(),
+    py_modules=['tines'],
+    install_requires=load_requirements(),
+    entry_points={
+        "console_scripts": [
+            "tines=tines:app",
+        ],
+    },
+)
