@@ -86,7 +86,7 @@ class TenantManager:
         return TenantManager.enpoint_call(
             "GET",
             "api/v1/teams"
-        )["teams"]
+        )["data"]["teams"]
 
     @staticmethod
     def enpoint_call(
