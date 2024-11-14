@@ -28,6 +28,19 @@ def checkout(
 ):
     TenantManager.checkout_tenant(domain)
 
+@app.command(help="Switch to other tenants")
+def teams():
+    TABLE = Table()
+    TEAMS = TenantManager.tenant_teams()
+
+    TABLE.add_column("ID",   justify="center")
+    TABLE.add_column("Name", justify="center")
+
+    for team in TEAMS:
+        TABLE.add_row(str(team["id"]), team["name"])
+    
+    print(TABLE)
+
 @app.command(help="Show tenant details")
 def info():
 
