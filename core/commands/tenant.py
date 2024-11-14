@@ -2,7 +2,6 @@ from rich.table                   import Table
 from rich                         import print
 from typing_extensions            import Annotated
 from core.managers.tenant_manager import TenantManager
-from os.path                      import abspath
 from typer                        import Typer, Argument, Option
 
 app = Typer()
