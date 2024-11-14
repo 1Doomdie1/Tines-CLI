@@ -18,33 +18,33 @@ def create(
 ):
     WorkflowManager.create_workflow(team_id, name, description, keep_events_for, folder_id, tags, disabled, priority)
 
-@app.command(help="Get workflow logs")
-def logs(
-    id:      Annotated[int, Argument(..., help="Workflow ID")],
-    filters: Annotated[str, Option  (..., help="Filter logs")] = None
-):
-    ...
+# @app.command(help="Get workflow logs")
+# def logs(
+#     id:      Annotated[int, Argument(..., help="Workflow ID")],
+#     filters: Annotated[str, Option  (..., help="Filter logs")] = None
+# ):
+#     ...
 
-@app.command(help="Get workflow details")
-def info(
-    id: Annotated[int, Argument(..., help="Workflow ID")]
-):
-    ...
+# @app.command(help="Get workflow details")
+# def info(
+#     id: Annotated[int, Argument(..., help="Workflow ID")]
+# ):
+#     ...
 
-@app.command(help="Archive workflow")
-def archive(
-    id: Annotated[int, Argument(..., help="Workflow ID")]
-):
-    ...
+# @app.command(help="Archive workflow")
+# def archive(
+#     id: Annotated[int, Argument(..., help="Workflow ID")]
+# ):
+#     ...
 
-@app.command(help="Delete workflow")
-def delete(
-    id: Annotated[int, Argument(..., help="Workflow ID")]
-):
-    ...
+# @app.command(help="Delete workflow")
+# def delete(
+#     id: Annotated[int, Argument(..., help="Workflow ID")]
+# ):
+#     ...
 
-@app.command(name="list", help="List all workflows in the tenant")
-def _list(
-    id: Annotated[int, Argument(..., help="Workflow ID")]
-):
-    ...
+# @app.command(name="list", help="List all workflows in the tenant")
+# def _list(
+#     id: Annotated[int, Argument(..., help="Workflow ID")]
+# ):
+#     ...
