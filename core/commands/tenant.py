@@ -44,7 +44,7 @@ def teams():
 @app.command(help="Show tenant details")
 def info():
 
-    tenant_data = TenantManager.enpoint_call("GET", "api/v1/info")["stack"]
+    tenant_data = TenantManager.enpoint_call("GET", "api/v1/info")["data"]["stack"]
     
     TABLE = Table()
     TABLE.add_column("Name",       justify="center")
