@@ -1,7 +1,8 @@
 from typing       import Union
+from os           import scandir
 from rich.console import Console
-from json         import dump, load
 from os           import makedirs, remove
+from json         import dump, load, loads
 from os.path      import join, exists, abspath
 from dotenv       import set_key, dotenv_values
 from requests     import get, post, RequestException
@@ -29,13 +30,10 @@ class TenantManager:
     ) -> None:
         TENANT_CONFIG_FILE_PATH = join(TENANT_DIRECTORY, f"{domain}.json")
 
-        # Make sure tenant is not added
         if exists(TENANT_CONFIG_FILE_PATH) and not overwrite: CONSOLE.log(f"Tenant '{domain}' already exists"); return
 
-        # Check credentials
         if not TenantManager.validate_credentials(domain, api_key): CONSOLE.log(f"Invalid credentials"); return 
 
-        # Create tenant config file
         with open(TENANT_CONFIG_FILE_PATH, "w") as file:
             dump({"domain": domain, "api_key": api_key}, file, indent=4)
         CONSOLE.log(f"Tenant '{domain}' added successfully")
@@ -60,6 +58,7 @@ class TenantManager:
         TENANT_CONFIG_FILE_PATH = join(TENANT_DIRECTORY, f"{DOMAIN}.json")
 
         TenantManager.checkout_tenant("None")
+        set_key(DOTENV_FILE, "USE_TENANT", "None")
         remove(TENANT_CONFIG_FILE_PATH)
 
     @staticmethod
@@ -89,6 +88,14 @@ class TenantManager:
         )["data"]["teams"]
 
     @staticmethod
+    def list_local_tenants() -> list:
+        TENANTS = [tenant.name for tenant in scandir(TENANT_DIRECTORY) if tenant.is_file()]
+
+        if not TENANTS: CONSOLE.log("No local tenants please use the 'tines tenant add' command to add one"); exit()
+
+        return TENANTS
+
+    @staticmethod
     def enpoint_call(
         method:   str,
         endpoint: str,
@@ -109,7 +116,7 @@ class TenantManager:
         try:
             req = METHODS[method.lower()](URL, **kwargs)
             return {
-                "data":        req.json(),
+                "data":        loads(req.content),
                 "status_code": req.status_code
             }
         except RequestException as e:
