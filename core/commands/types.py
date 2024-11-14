@@ -12,3 +12,21 @@ class keep_events_for_type(StrEnum):
     _90d  = "90d"
     _180d = "180d"
     _365d = "365d"
+
+class List_Workflows_Filter_Types(StrEnum):
+    LOCKED                 = "LOCKED"
+    FAVORITE               = "FAVORITE"
+    DISABLED               = "DISABLED"
+    PUBLISHED              = "PUBLISHED"
+    API_ENABLED            = "API_ENABLED"
+    HIGH_PRIORITY          = "HIGH_PRIORITY"
+    SEND_TO_STORY_ENABLED  = "SEND_TO_STORY_ENABLED"
+    CHANGE_CONTROL_ENABLED = "CHANGE_CONTROL_ENABLED"
+
+class List_Workflows_Order_Types(StrEnum):
+    NAME                  = "NAME"
+    NAME_DESC             = "NAME_DESC"
+    RECENTLY_EDITED       = "RECENTLY_EDITED"
+    ACTION_COUNT_ASC      = "ACTION_COUNT_ASC"
+    ACTION_COUNT_DESC     = "ACTION_COUNT_DESC"
+    LEAST_RECENTLY_EDITED = "LEAST_RECENTLY_EDITED"
