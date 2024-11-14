@@ -11,6 +11,18 @@ After the requirements are installed please run the `setup.py` script
 ```bash
 pip install --editable .
 ```
+# Capabilities
+- Tenant Management
+  - add
+  - delete
+  - checkout
+  - teams
+  - info
+  - list
+
+- Workflow Management
+  - create
+  - list
 
 # How to connect to your tenant
 For this you will need a [tines api key](https://www.tines.com/api/authentication/) and your tenant domain. To get your tenant domain just login to tines and copy this part of the url `https://<YOUR_TENANT_ID>.tines.com/`.
