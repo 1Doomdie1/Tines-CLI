@@ -2,10 +2,8 @@ from rich.table                   import Table
 from rich                         import print
 from typing_extensions            import Annotated
 from core.managers.tenant_manager import TenantManager
-from dotenv                       import load_dotenv
 from os.path                      import abspath
 from typer                        import Typer, Argument, Option
-from os                           import environ, scandir
 
 app = Typer()
 
@@ -38,7 +36,7 @@ def teams():
 
     for team in TEAMS:
         TABLE.add_row(str(team["id"]), team["name"])
-    
+
     print(TABLE)
 
 @app.command(help="Show tenant details")
@@ -59,13 +57,13 @@ def info():
 
 @app.command(name="list", help="List all local available tenants")
 def _list():
-    TENANTS_PATH = abspath("tenants")
+    
+    TENANTS = TenantManager.list_local_tenants()
     
     TABLE = Table()
     TABLE.add_column("Domain Name", justify="center")
 
-    for entry in scandir(TENANTS_PATH):
-        if entry.is_file():
-            TABLE.add_row(entry.name.replace(".json", ""))
+    for tenant in TENANTS:
+        TABLE.add_row(tenant.replace(".json", ""))
     
     print(TABLE)
