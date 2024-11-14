@@ -41,7 +41,7 @@ $> tines tenant add cool-domain-1234 qwertyuio-123 --checkout
            Now using 'cool-domain-1234' tenant
 ```
 
-To get tenat info use this command
+To get tenant info use this command
 ```
 $> tines tenant info
 ┏━━━━━━┳━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓
