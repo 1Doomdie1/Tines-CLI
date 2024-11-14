@@ -82,12 +82,19 @@ class TenantManager:
             return load(file)
     
     @staticmethod
+    def tenant_teams() -> list:
+        return TenantManager.enpoint_call(
+            "GET",
+            "api/v1/teams"
+        )["teams"]
+
+    @staticmethod
     def enpoint_call(
         method:   str,
         endpoint: str,
         params:   Union[str | None] = None,
         **kwargs
-    ) -> Union[dict | None]:
+    ) -> Union[ dict | None]:
         METHODS = {
             "get":  get,
             "post": post
@@ -101,7 +108,10 @@ class TenantManager:
 
         try:
             req = METHODS[method.lower()](URL, **kwargs)
-            return req.json()
+            return {
+                "data":        req.json(),
+                "status_code": req.status_code
+            }
         except RequestException as e:
             CONSOLE.log(f"Request error encountered\n{e}")
         except KeyError:
