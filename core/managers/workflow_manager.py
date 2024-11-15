@@ -92,6 +92,7 @@ class WorkflowManager:
     ) -> None:
         DATA = kwargs
 
+
         DATA.update({
             "add_tag_names":     kwargs["add_tag_names"].split(",") if kwargs["add_tag_names"] else None,
             "remove_tag_names":  kwargs["remove_tag_names"].split(",") if kwargs["remove_tag_names"] else None,
@@ -100,10 +101,14 @@ class WorkflowManager:
             "exit_agent_ids":    kwargs["exit_agent_ids"].split(",") if kwargs["exit_agent_ids"] else None,
         })
 
+        DATA = {key: value for key, value in DATA.items() if value != None}
+
+        if not DATA: CONSOLE.log("At least one option needs to be specified. Please use the '--help' flag"); exit()
+
         req = TenantManager.enpoint_call(
             "PUT",
             f"api/v1/stories/{id}",
-            json={key: value for key, value in DATA.items() if value != None}
+            json=DATA
         )
 
         if req["status_code"] == 200:
