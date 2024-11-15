@@ -70,7 +70,7 @@ def update(
     locked:                 Annotated[bool | None,                    Option  (..., help="Indicate whether the story is locked, preventing edits"                          )] = None,
     priority:               Annotated[bool | None,                    Option  (..., help="Indicate whether story runs with high priority"                                  )] = None,
     sts_access_source:      Annotated[STS_Access_Source_Types | None, Option  (..., help="Indicate where the send to story can be used"                                    )] = None,
-    sts_access:             Annotated[STS_Access_Types,               Option  (..., help="Controls who is allowed to send to this story"                                   )] = STS_Access_Types.TEAM,
+    sts_access:             Annotated[STS_Access_Types | None,        Option  (..., help="Controls who is allowed to send to this story"                                   )] = None,
     shared_team_slugs:      Annotated[str | None,                     Option  (..., help="List of teams' slugs that can send to this story."                               )] = None,
     sts_skill_conf:         Annotated[bool | None,                    Option  (..., help="Indicate whether workbench should ask for confirmation before running this story")] = None,
     entry_agent_id:         Annotated[int | None,                     Option  (..., help="The ID of the entry action for this story (action must be of type Webhook)"      )] = None,
@@ -79,13 +79,7 @@ def update(
     folder_id:              Annotated[int | None,                     Option  (..., help="Story ID"                                                                        )] = None,
     change_control_enabled: Annotated[bool | None,                    Option  (..., help="Indicate if Change Control is enabled"                                           )] = None
 ):
-    WorkflowManager.update(
-        id, name, description, 
-        add_tag_names, remove_tag_names, keep_events_for, 
-        disabled, locked, priority, 
-        sts_access_source, sts_access, sts_skill_conf,
-        shared_team_slugs, entry_agent_id, exit_agent_ids, 
-        team_id, folder_id, change_control_enabled)
+    WorkflowManager.update(**locals())
 
 # @app.command(help="Get workflow details")
 # def info(
