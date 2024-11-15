@@ -92,7 +92,6 @@ class WorkflowManager:
     ) -> None:
         DATA = kwargs
 
-
         DATA.update({
             "add_tag_names":     kwargs["add_tag_names"].split(",") if kwargs["add_tag_names"] else None,
             "remove_tag_names":  kwargs["remove_tag_names"].split(",") if kwargs["remove_tag_names"] else None,
