@@ -199,3 +199,26 @@ class WorkflowManager:
         else:
             CONSOLE.log("Error encountered")
             CONSOLE.log("Message: [bold red]{}[/bold red]".format(req["data"][0]))
+
+    @staticmethod
+    def export(
+        id:             int,
+        randomize_urls: bool
+    ) -> dict:
+
+        DATA = {
+            "randomize_urls": randomize_urls
+        }
+
+        req = TenantManager.endpoint_call(
+            "GET",
+            f"api/v1/stories/{id}/export",
+            json=DATA
+        )
+
+        if req["status_code"] == 200:
+            return req["data"]
+        else:
+            CONSOLE.log("Error encountered")
+            CONSOLE.log("Message: [bold red]{}[/bold red]".format(req["data"][0]))
+            exit()
