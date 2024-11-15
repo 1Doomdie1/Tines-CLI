@@ -84,3 +84,60 @@ class WorkflowManager:
         if req["status_code"] == 200:
             if not req["data"]["stories"]: CONSOLE.log("No workflows found"); exit()
             return req["data"]["stories"]
+
+    @staticmethod
+    def update(
+        id:                     int,
+        name:                   str, 
+        description:            str,  
+        add_tag_names:          str, 
+        remove_tag_names:       str, 
+        keep_events_for:        str, 
+        disabled:               bool,
+        locked:                 bool,
+        priority:               bool,
+        sts_access_source:      str, 
+        sts_access:             str,
+        shared_team_slugs:      str, 
+        sts_skill_conf:         bool,
+        entry_agent_id:         int,
+        exit_agent_ids:         str,
+        team_id:                int,
+        folder_id:              int,
+        change_control_enabled: bool
+    ) -> None:
+        optional_fields = {
+            "disabled":               disabled,
+            "locked":                 locked,
+            "priority":               priority,
+            "sts_skill_conf":         sts_skill_conf,
+            "keep_events_for":        keep_events_for,
+            "change_control_enabled": change_control_enabled
+        }
+
+        DATA = {
+            "name":                   name, 
+            "description":            description,  
+            "add_tag_names":          add_tag_names.split(",") if add_tag_names else None, 
+            "remove_tag_names":       remove_tag_names.split(",") if remove_tag_names else None, 
+            "sts_access_source":      "SPECIFIC_TEAMS" if shared_team_slugs else sts_access_source, 
+            "sts_access":             sts_access,
+            "shared_team_slugs":      shared_team_slugs.split(",") if shared_team_slugs else [], 
+            "entry_agent_id":         entry_agent_id,
+            "exit_agent_ids":         exit_agent_ids.split(",") if exit_agent_ids else None,
+            "team_id":                team_id,
+            "folder_id":              folder_id,
+            **{key: value for key, value in optional_fields.items() if value},
+        }
+
+        req = TenantManager.enpoint_call(
+            "PUT",
+            f"api/v1/stories/{id}",
+            json=DATA
+        )
+
+        if req["status_code"] == 200:
+            CONSOLE.log("Workflow has been updated succesfully")
+        else:
+            CONSOLE.log("Error encountered")
+            CONSOLE.log("Message: [bold red]{}[/bold red]".format(req["data"][0]))
