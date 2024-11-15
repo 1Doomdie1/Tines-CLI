@@ -30,3 +30,18 @@ class List_Workflows_Order_Types(StrEnum):
     ACTION_COUNT_ASC      = "ACTION_COUNT_ASC"
     ACTION_COUNT_DESC     = "ACTION_COUNT_DESC"
     LEAST_RECENTLY_EDITED = "LEAST_RECENTLY_EDITED"
+
+class Output_Format_Types(StrEnum):
+    JSON  = "json"
+    TABLE = "table"
+
+class STS_Access_Source_Types(StrEnum):
+    STS               = "STS"
+    OFF               = "OFF"
+    WORKBENCH         = "WORKBENCH"
+    STS_AND_WORKBENCH = "STS_AND_WORKBENCH"
+
+class STS_Access_Types(StrEnum):
+    TEAM           = "TEAM"
+    GLOBAL         = "GLOBAL"
+    SPECIFIC_TEAMS = "SPECIFIC_TEAMS"
