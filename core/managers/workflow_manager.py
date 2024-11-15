@@ -129,7 +129,31 @@ class WorkflowManager:
             CONSOLE.log("Workflow has been updated succesfully")
             del DATA["id"]
             return DATA
-        else:
-            CONSOLE.log("Error encountered")
-            CONSOLE.log("Message: [bold red]{}[/bold red]".format(req["data"][0]))
-            exit()
+
+        CONSOLE.log("Error encountered")
+        CONSOLE.log("Message: [bold red]{}[/bold red]".format(req["data"][0]))
+        exit()
+
+    @staticmethod
+    def get_workflow(
+        id:   int,
+        mode: str
+    ) -> dict:
+        
+        DATA = {
+            "story_id":   id,
+            "story_mode": mode 
+        }
+
+        req = TenantManager.enpoint_call(
+            "GET",
+            f"api/v1/stories/{id}",
+            json=DATA
+        )
+
+        if req["status_code"] == 200:
+            return req["data"]
+
+        CONSOLE.log("Error encountered")
+        CONSOLE.log("Message: [bold red]{}[/bold red]".format(req["data"][0]))
+        exit()
