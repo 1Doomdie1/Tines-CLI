@@ -25,6 +25,7 @@ pip install --editable .
   - info
   - create
   - update
+  - export
   - delete
   - batch-delete
 
