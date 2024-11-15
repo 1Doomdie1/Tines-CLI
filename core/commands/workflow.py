@@ -1,4 +1,4 @@
-from core.commands.types            import *
+from core.utils.types               import *
 from rich.table                     import Table
 from rich                           import print
 from typing_extensions              import Annotated
