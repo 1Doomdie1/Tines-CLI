@@ -117,16 +117,16 @@ class WorkflowManager:
         }
 
         DATA = {
-            "name":                   name,
-            "add_tag_names":          add_tag_names.split(",") if add_tag_names else None, 
-            "remove_tag_names":       remove_tag_names.split(",") if remove_tag_names else None, 
-            "sts_access_source":      "SPECIFIC_TEAMS" if shared_team_slugs else sts_access_source, 
-            "sts_access":             sts_access,
-            "shared_team_slugs":      shared_team_slugs.split(",") if shared_team_slugs else [], 
-            "entry_agent_id":         entry_agent_id,
-            "exit_agent_ids":         exit_agent_ids.split(",") if exit_agent_ids else None,
-            "team_id":                team_id,
-            "folder_id":              folder_id,
+            "name":              name,
+            "add_tag_names":     add_tag_names.split(",") if add_tag_names else None, 
+            "remove_tag_names":  remove_tag_names.split(",") if remove_tag_names else None, 
+            "sts_access_source": "SPECIFIC_TEAMS" if shared_team_slugs else sts_access_source, 
+            "sts_access":        sts_access,
+            "shared_team_slugs": shared_team_slugs.split(",") if shared_team_slugs else [], 
+            "entry_agent_id":    entry_agent_id,
+            "exit_agent_ids":    exit_agent_ids.split(",") if exit_agent_ids else None,
+            "team_id":           team_id,
+            "folder_id":         folder_id,
             **{key: value for key, value in optional_fields.items() if value != None},
         }
 
