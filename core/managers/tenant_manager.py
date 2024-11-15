@@ -5,7 +5,7 @@ from os           import makedirs, remove
 from json         import dump, load, loads
 from os.path      import join, exists, abspath
 from dotenv       import set_key, dotenv_values
-from requests     import get, post, put, RequestException
+from requests     import get, post, put, delete, RequestException
 
 CONSOLE          = Console(log_path=False)
 DOTENV_FILE      = abspath(".env")
@@ -46,9 +46,9 @@ class TenantManager:
         domain: str
     ) -> None:
         TENANT_CONFIG_FILE_PATH = join(TENANT_DIRECTORY, f"{domain}.json")
-        
+
         if not exists(TENANT_CONFIG_FILE_PATH): CONSOLE.log(f"Unknow tenant: '{domain}'"); return
-        
+
         set_key(DOTENV_FILE, "USE_TENANT", domain)
         CONSOLE.log(f"Now using '{domain}' tenant")
 
@@ -79,10 +79,10 @@ class TenantManager:
         TENANT_CONFIG_FILE_PATH = join(TENANT_DIRECTORY, f"{domain}.json")
         with open(TENANT_CONFIG_FILE_PATH, "r") as file:
             return load(file)
-    
+
     @staticmethod
     def tenant_teams() -> list:
-        return TenantManager.enpoint_call(
+        return TenantManager.endpoint_call(
             "GET",
             "api/v1/teams"
         )["data"]["teams"]
@@ -96,7 +96,7 @@ class TenantManager:
         return TENANTS
 
     @staticmethod
-    def enpoint_call(
+    def endpoint_call(
         method:   str,
         endpoint: str,
         params:   Union[str | None] = None,
@@ -105,11 +105,13 @@ class TenantManager:
         METHODS = {
             "get":  get,
             "post": post,
-            "put":  put
+            "put":  put,
+            "delete":  delete
         }
+
         TENANT_DATA = TenantManager.tenant_data()
         URL = f"https://{TENANT_DATA['domain']}.tines.com/{endpoint}{f'?{params}' if params else ''}"
-        
+
         headers = kwargs.get("headers", {})
         headers["Authorization"] = f"Bearer {TENANT_DATA['api_key']}"
         kwargs["headers"] = headers
