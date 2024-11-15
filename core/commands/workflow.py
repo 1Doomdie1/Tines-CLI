@@ -77,12 +77,30 @@ def update(
     exit_agent_ids:         Annotated[str | None,                     Option  (..., help="Array of IDs describing exit actions for this story"                             )] = None,
     team_id:                Annotated[int | None,                     Option  (..., help="The ID of the team to move the story to"                                         )] = None,
     folder_id:              Annotated[int | None,                     Option  (..., help="Story ID"                                                                        )] = None,
-    change_control_enabled: Annotated[bool | None,                    Option  (..., help="Indicate if Change Control is enabled"                                           )] = None
+    change_control_enabled: Annotated[bool | None,                    Option  (..., help="Indicate if Change Control is enabled"                                           )] = None,
+    verbose:                Annotated[bool,                           Option  (..., help="Verbose"                                                                         )] = False,
+    format_as:              Annotated[Output_Format_Types | None,     Option  (..., help="Output format"                                                                   )] = Output_Format_Types.TABLE
 ):
-    kwargs = locals()
-    del kwargs['id']
+    UPDATED_VALUES = WorkflowManager.update(
+        id, name, description, add_tag_names,
+        remove_tag_names, keep_events_for, disabled, locked,
+        priority, sts_access_source, sts_access, shared_team_slugs,
+        sts_skill_conf, entry_agent_id, exit_agent_ids, team_id,
+        folder_id, change_control_enabled
+    )
 
-    WorkflowManager.update(id, **kwargs)
+    if verbose:
+        if format_as == Output_Format_Types.TABLE:
+            TABLE = Table()
+            TABLE.add_column("Attribute", justify="center")
+            TABLE.add_column("Value",     justify="center")
+
+            for attribute, value in UPDATED_VALUES.items():
+                TABLE.add_row(attribute.capitalize(), f"{value}")
+            print(TABLE)
+        elif format_as == Output_Format_Types.JSON:
+            print(UPDATED_VALUES)
+
 
 # @app.command(help="Get workflow details")
 # def info(
