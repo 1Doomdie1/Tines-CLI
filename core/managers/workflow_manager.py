@@ -127,7 +127,7 @@ class WorkflowManager:
             "exit_agent_ids":         exit_agent_ids.split(",") if exit_agent_ids else None,
             "team_id":                team_id,
             "folder_id":              folder_id,
-            **{key: value for key, value in optional_fields.items() if value},
+            **{key: value for key, value in optional_fields.items() if value != None},
         }
 
         req = TenantManager.enpoint_call(
