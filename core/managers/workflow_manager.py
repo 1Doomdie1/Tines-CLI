@@ -88,21 +88,36 @@ class WorkflowManager:
     @staticmethod
     def update(
         id: int,
-        **kwargs
-    ) -> None:
-        DATA = kwargs
+        name, 
+        description, 
+        add_tag_names,
+        remove_tag_names, 
+        keep_events_for, 
+        disabled, 
+        locked,
+        priority, 
+        sts_access_source, 
+        sts_access, 
+        shared_team_slugs,
+        sts_skill_conf, 
+        entry_agent_id, 
+        exit_agent_ids, team_id,
+        folder_id, 
+        change_control_enabled
+    ) -> dict:
+        DATA = locals()
 
         DATA.update({
-            "add_tag_names":     kwargs["add_tag_names"].split(",") if kwargs["add_tag_names"] else None,
-            "remove_tag_names":  kwargs["remove_tag_names"].split(",") if kwargs["remove_tag_names"] else None,
-            "sts_access_source": "SPECIFIC_TEAMS" if kwargs["shared_team_slugs"] and not kwargs["sts_access_source"] else kwargs["sts_access_source"],
-            "shared_team_slugs": kwargs["shared_team_slugs"].split(",") if kwargs["shared_team_slugs"] else None,
-            "exit_agent_ids":    kwargs["exit_agent_ids"].split(",") if kwargs["exit_agent_ids"] else None,
+            "add_tag_names":     add_tag_names.split(",") if add_tag_names else None,
+            "remove_tag_names":  remove_tag_names.split(",") if remove_tag_names else None,
+            "sts_access_source": "SPECIFIC_TEAMS" if shared_team_slugs and not sts_access_source else sts_access_source,
+            "shared_team_slugs": shared_team_slugs.split(",") if shared_team_slugs else None,
+            "exit_agent_ids":    exit_agent_ids.split(",") if exit_agent_ids else None,
         })
 
         DATA = {key: value for key, value in DATA.items() if value != None}
 
-        if not DATA: CONSOLE.log("At least one option needs to be specified. Please use the '--help' flag"); exit()
+        if  len(DATA) == 1: CONSOLE.log("At least one option needs to be specified. Please use the '--help' flag"); exit()
 
         req = TenantManager.enpoint_call(
             "PUT",
@@ -112,6 +127,33 @@ class WorkflowManager:
 
         if req["status_code"] == 200:
             CONSOLE.log("Workflow has been updated succesfully")
-        else:
-            CONSOLE.log("Error encountered")
-            CONSOLE.log("Message: [bold red]{}[/bold red]".format(req["data"][0]))
+            del DATA["id"]
+            return DATA
+
+        CONSOLE.log("Error encountered")
+        CONSOLE.log("Message: [bold red]{}[/bold red]".format(req["data"][0]))
+        exit()
+
+    @staticmethod
+    def get_workflow(
+        id:   int,
+        mode: str
+    ) -> dict:
+        
+        DATA = {
+            "story_id":   id,
+            "story_mode": mode 
+        }
+
+        req = TenantManager.enpoint_call(
+            "GET",
+            f"api/v1/stories/{id}",
+            json=DATA
+        )
+
+        if req["status_code"] == 200:
+            return req["data"]
+
+        CONSOLE.log("Error encountered")
+        CONSOLE.log("Message: [bold red]{}[/bold red]".format(req["data"][0]))
+        exit()

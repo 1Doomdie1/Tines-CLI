@@ -29,17 +29,18 @@ def _list(
     tags:      Annotated[str | None,                         Option(..., help="A comma separated list of tag names to filter by"                 )] = None,
     filter:    Annotated[List_Workflows_Filter_Types | None, Option(..., help="Filter by one of"                                                 )] = None,
     order:     Annotated[List_Workflows_Order_Types  | None, Option(..., help="Order the results by one of"                                      )] = None,
-    format_as: Annotated[Output_Format_Types | None,         Option(..., help="Output format"                                                    )] = Output_Format_Types.TABLE
-):
+    format_as: Annotated[Output_Format_Types,                Option(..., help="Output format"                                                    )] = Output_Format_Types.TABLE
+) -> None:
     STORIES = WorkflowManager.list_workflows(team_id, folder_id, per_page, page, tags, filter, order)
 
     if format_as == Output_Format_Types.TABLE:
         TABLE   = Table()
         COLUMNS = (
-            "ID", "Name", "Team ID", 
-            "GUID", "Mode", "Folder ID", 
-            "Tags", "Disabled", "Priority", 
-            "STS"
+            "ID", "Name", 
+            "Team ID", "GUID", 
+            "Mode", "Folder ID", 
+            "Tags", "Disabled", 
+            "Priority", "STS"
         )
 
         for column in COLUMNS:
@@ -57,38 +58,69 @@ def _list(
     elif format_as == Output_Format_Types.JSON:
         print(STORIES)
 
-
 @app.command(help="Update a story. If change control is enabled on the story the request will be performed on the test story")
 def update(
-    id:                     Annotated[int,                            Argument(..., help="Story ID"                                                                        )],
-    name:                   Annotated[str | None,                     Option  (..., help="Story name"                                                                      )] = None,
-    description:            Annotated[str | None,                     Option  (..., help="A user-defined description of the story"                                         )] = None,
-    add_tag_names:          Annotated[str | None,                     Option  (..., help="Array of tag names to add to the story"                                          )] = None,
-    remove_tag_names:       Annotated[str | None,                     Option  (..., help="Array of tag names to remove from the story"                                     )] = None,
-    keep_events_for:        Annotated[keep_events_for_type | None,    Option  (..., help="Event retention period"                                                          )] = None,
-    disabled:               Annotated[bool | None,                    Option  (..., help="Indicate whether the story is disabled from running"                             )] = None,
-    locked:                 Annotated[bool | None,                    Option  (..., help="Indicate whether the story is locked, preventing edits"                          )] = None,
-    priority:               Annotated[bool | None,                    Option  (..., help="Indicate whether story runs with high priority"                                  )] = None,
-    sts_access_source:      Annotated[STS_Access_Source_Types | None, Option  (..., help="Indicate where the send to story can be used"                                    )] = None,
-    sts_access:             Annotated[STS_Access_Types | None,        Option  (..., help="Controls who is allowed to send to this story"                                   )] = None,
-    shared_team_slugs:      Annotated[str | None,                     Option  (..., help="List of teams' slugs that can send to this story."                               )] = None,
-    sts_skill_conf:         Annotated[bool | None,                    Option  (..., help="Indicate whether workbench should ask for confirmation before running this story")] = None,
-    entry_agent_id:         Annotated[int | None,                     Option  (..., help="The ID of the entry action for this story (action must be of type Webhook)"      )] = None,
-    exit_agent_ids:         Annotated[str | None,                     Option  (..., help="Array of IDs describing exit actions for this story"                             )] = None,
-    team_id:                Annotated[int | None,                     Option  (..., help="The ID of the team to move the story to"                                         )] = None,
-    folder_id:              Annotated[int | None,                     Option  (..., help="Story ID"                                                                        )] = None,
-    change_control_enabled: Annotated[bool | None,                    Option  (..., help="Indicate if Change Control is enabled"                                           )] = None
-):
-    kwargs = locals()
-    del kwargs['id']
+    id:                     Annotated[int,                            Argument(..., help="Story ID"                                              )],
+    name:                   Annotated[str | None,                     Option  (..., help="Story name"                                            )] = None,
+    description:            Annotated[str | None,                     Option  (..., help="A user-defined description of the story"               )] = None,
+    add_tag_names:          Annotated[str | None,                     Option  (..., help="Array of tag names to add to the story"                )] = None,
+    remove_tag_names:       Annotated[str | None,                     Option  (..., help="Array of tag names to remove from the story"           )] = None,
+    keep_events_for:        Annotated[keep_events_for_type | None,    Option  (..., help="Event retention period"                                )] = None,
+    disabled:               Annotated[bool | None,                    Option  (..., help="Indicate whether the story is disabled from running"   )] = None,
+    locked:                 Annotated[bool | None,                    Option  (..., help="Indicate whether the story is locked, preventing edits")] = None,
+    priority:               Annotated[bool | None,                    Option  (..., help="Indicate whether story runs with high priority"        )] = None,
+    sts_access_source:      Annotated[STS_Access_Source_Types | None, Option  (..., help="Indicate where the send to story can be used"          )] = None,
+    sts_access:             Annotated[STS_Access_Types | None,        Option  (..., help="Controls who is allowed to send to this story"         )] = None,
+    shared_team_slugs:      Annotated[str | None,                     Option  (..., help="List of teams' slugs that can send to this story."     )] = None,
+    sts_skill_conf:         Annotated[bool | None,                    Option  (..., help="Skill running confirmation"                            )]= None,
+    entry_agent_id:         Annotated[int | None,                     Option  (..., help="The ID of the entry action for this story"             )] = None,
+    exit_agent_ids:         Annotated[str | None,                     Option  (..., help="Array of IDs describing exit actions for this story"   )] = None,
+    team_id:                Annotated[int | None,                     Option  (..., help="The ID of the team to move the story to"               )] = None,
+    folder_id:              Annotated[int | None,                     Option  (..., help="Story ID"                                              )] = None,
+    change_control_enabled: Annotated[bool | None,                    Option  (..., help="Indicate if Change Control is enabled"                 )] = None,
+    format_as:              Annotated[Output_Format_Types,            Option  (..., help="Output format"                                         )] = Output_Format_Types.TABLE,
+    verbose:                Annotated[bool,                           Option  (..., help="Verbose"                                               )] = False
+) -> None:
 
-    WorkflowManager.update(id, **kwargs)
+    UPDATED_VALUES = WorkflowManager.update(
+        id, name, description, add_tag_names,
+        remove_tag_names, keep_events_for, disabled, locked,
+        priority, sts_access_source, sts_access, shared_team_slugs,
+        sts_skill_conf, entry_agent_id, exit_agent_ids, team_id,
+        folder_id, change_control_enabled
+    )
 
-# @app.command(help="Get workflow details")
-# def info(
-#     id: Annotated[int, Argument(..., help="Workflow ID")]
-# ):
-#     ...
+    if verbose:
+        if format_as == Output_Format_Types.TABLE:
+            TABLE = Table()
+            TABLE.add_column("Attribute", justify="center")
+            TABLE.add_column("Value",     justify="center")
+
+            for attribute, value in UPDATED_VALUES.items():
+                TABLE.add_row(attribute.capitalize(), f"{value}")
+            print(TABLE)
+        elif format_as == Output_Format_Types.JSON:
+            print(UPDATED_VALUES)
+
+@app.command(help="Get workflow details")
+def info(
+    id:        Annotated[int,                         Argument(..., help="Workflow ID")],
+    mode:      Annotated[Workflow_Modes_Types | None, Option  (..., help="The mode (TEST or LIVE) of the story to retrieve")] = Workflow_Modes_Types.ALL,
+    format_as: Annotated[Output_Format_Types,         Option  (..., help="Output format"                                   )] = Output_Format_Types.TABLE
+) -> None:
+    WORKFLOW_DATA = WorkflowManager.get_workflow(id, mode)
+
+    if format_as == Output_Format_Types.JSON:
+        print(WORKFLOW_DATA)
+    elif format_as == Output_Format_Types.TABLE:
+        TABLE = Table()
+        TABLE.add_column("Attribute", justify="center")
+        TABLE.add_column("Value",     justify="center")
+
+        for attribute, value in WORKFLOW_DATA.items():
+            TABLE.add_row(attribute, f"{value}")
+        print(TABLE)
+
 
 # @app.command(help="Archive workflow")
 # def archive(

@@ -45,3 +45,8 @@ class STS_Access_Types(StrEnum):
     TEAM           = "TEAM"
     GLOBAL         = "GLOBAL"
     SPECIFIC_TEAMS = "SPECIFIC_TEAMS"
+
+class Workflow_Modes_Types(StrEnum):
+    LIVE = "LIVE"
+    TEST = "TEST"
+    ALL  = "*"
