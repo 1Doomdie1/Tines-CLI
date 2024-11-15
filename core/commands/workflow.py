@@ -1,9 +1,17 @@
 from core.utils.types               import *
+from json                           import dump
+from pathlib                        import Path
 from rich.table                     import Table
-from rich                           import print
+from rich.console                   import Console
+from os                             import makedirs
+from os.path                        import abspath, join
 from typing_extensions              import Annotated, List
 from core.managers.workflow_manager import WorkflowManager
 from typer                          import Typer, Argument, Option
+
+
+EXPORTS_PATH = abspath("exports")
+CONSOLE = Console(log_path=False)
 
 app = Typer()
 
@@ -54,9 +62,9 @@ def _list(
                 f'{story["send_to_story_enabled"]}'
             )
 
-        print(TABLE)
+        CONSOLE.log(TABLE)
     elif format_as == Output_Format_Types.JSON:
-        print(STORIES)
+        CONSOLE.log(STORIES)
 
 @app.command(help="Update a story. If change control is enabled on the story the request will be performed on the test story")
 def update(
@@ -72,7 +80,7 @@ def update(
     sts_access_source:      Annotated[STS_Access_Source_Types | None, Option  (..., help="Indicate where the send to story can be used"          )] = None,
     sts_access:             Annotated[STS_Access_Types | None,        Option  (..., help="Controls who is allowed to send to this story"         )] = None,
     shared_team_slugs:      Annotated[str | None,                     Option  (..., help="List of teams' slugs that can send to this story."     )] = None,
-    sts_skill_conf:         Annotated[bool | None,                    Option  (..., help="Skill running confirmation"                            )]= None,
+    sts_skill_conf:         Annotated[bool | None,                    Option  (..., help="Skill running confirmation"                            )] = None,
     entry_agent_id:         Annotated[int | None,                     Option  (..., help="The ID of the entry action for this story"             )] = None,
     exit_agent_ids:         Annotated[str | None,                     Option  (..., help="Array of IDs describing exit actions for this story"   )] = None,
     team_id:                Annotated[int | None,                     Option  (..., help="The ID of the team to move the story to"               )] = None,
@@ -98,20 +106,20 @@ def update(
 
             for attribute, value in UPDATED_VALUES.items():
                 TABLE.add_row(attribute.capitalize(), f"{value}")
-            print(TABLE)
+            CONSOLE.log(TABLE)
         elif format_as == Output_Format_Types.JSON:
-            print(UPDATED_VALUES)
+            CONSOLE.log(UPDATED_VALUES)
 
 @app.command(help="Get workflow details")
 def info(
-    id:        Annotated[int,                         Argument(..., help="Workflow ID")],
+    id:        Annotated[int,                         Argument(..., help="Workflow ID"                                     )],
     mode:      Annotated[Workflow_Modes_Types | None, Option  (..., help="The mode (TEST or LIVE) of the story to retrieve")] = Workflow_Modes_Types.ALL,
     format_as: Annotated[Output_Format_Types,         Option  (..., help="Output format"                                   )] = Output_Format_Types.TABLE
 ) -> None:
     WORKFLOW_DATA = WorkflowManager.get(id, mode)
 
     if format_as == Output_Format_Types.JSON:
-        print(WORKFLOW_DATA)
+        CONSOLE.log(WORKFLOW_DATA)
     elif format_as == Output_Format_Types.TABLE:
         TABLE = Table()
         TABLE.add_column("Attribute", justify="center")
@@ -119,7 +127,7 @@ def info(
 
         for attribute, value in WORKFLOW_DATA.items():
             TABLE.add_row(attribute, f"{value}")
-        print(TABLE)
+        CONSOLE.log(TABLE)
 
 @app.command(help="Delete workflow")
 def delete(
@@ -132,6 +140,26 @@ def batch_delete(
     ids: Annotated[List[int],  Argument(..., help="Workflow ID")]
 ) -> None:
     WorkflowManager.delete(ids)
+
+@app.command(help="Export workflow")
+def export(
+    id:             Annotated[int,  Argument(..., help="Workflow ID"                      )],
+    output:         Annotated[Path, Option  (..., help="Output path"                      )] = EXPORTS_PATH,
+    randomize_urls: Annotated[bool, Option  (..., help="Randomize webhooks and pages urls")] = False
+) -> None:
+    makedirs(EXPORTS_PATH, exist_ok=True)
+
+    EXPORT_DATA = WorkflowManager.export(id, randomize_urls)
+
+    name = EXPORT_DATA["name"].replace(" ", "_")
+    output_path = abspath(join(output, f"{name}.json"))
+
+    with open(output_path, "w") as file:
+        dump(EXPORT_DATA, file, indent=4)
+
+    CONSOLE.log("Workflow succesfully exported")
+    CONSOLE.log(f"PATH: \'{output_path}\'")
+
 
 # @app.command(help="Archive workflow")
 # def archive(
