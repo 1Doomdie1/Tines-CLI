@@ -21,8 +21,9 @@ pip install --editable .
   - list
 
 - Workflow Management
-  - create
   - list
+  - create
+  - update
 
 # How to connect to your tenant
 For this you will need a [tines api key](https://www.tines.com/api/authentication/) and your tenant domain. To get your tenant domain just login to tines and copy this part of the url `https://<YOUR_TENANT_ID>.tines.com/`.
