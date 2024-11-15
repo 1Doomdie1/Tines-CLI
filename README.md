@@ -22,6 +22,7 @@ pip install --editable .
 
 - Workflow Management
   - list
+  - info
   - create
   - update
 
