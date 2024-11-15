@@ -62,22 +62,22 @@ def _list(
 def update(
     id:                     Annotated[int,                            Argument(..., help="Story ID"                                                                        )],
     name:                   Annotated[str | None,                     Option  (..., help="Story name"                                                                      )] = None,
-    description:            Annotated[str,                            Option  (..., help="A user-defined description of the story"                                         )] = "",
+    description:            Annotated[str | None,                     Option  (..., help="A user-defined description of the story"                                         )] = None,
     add_tag_names:          Annotated[str | None,                     Option  (..., help="Array of tag names to add to the story"                                          )] = None,
     remove_tag_names:       Annotated[str | None,                     Option  (..., help="Array of tag names to remove from the story"                                     )] = None,
     keep_events_for:        Annotated[keep_events_for_type | None,    Option  (..., help="Event retention period"                                                          )] = None,
-    disabled:               Annotated[bool | None,                           Option  (..., help="Indicate whether the story is disabled from running"                      )] = None,
-    locked:                 Annotated[bool | None,                    Option  (..., help="Indicate whether the story is locked, preventing edits"                          )] = None,
-    priority:               Annotated[bool | None,                    Option  (..., help="Indicate whether story runs with high priority"                                  )] = None,
+    disabled:               Annotated[bool,                           Option  (..., help="Indicate whether the story is disabled from running"                             )] = False,
+    locked:                 Annotated[bool,                           Option  (..., help="Indicate whether the story is locked, preventing edits"                          )] = False,
+    priority:               Annotated[bool,                           Option  (..., help="Indicate whether story runs with high priority"                                  )] = False,
     sts_access_source:      Annotated[STS_Access_Source_Types | None, Option  (..., help="Indicate where the send to story can be used"                                    )] = None,
     sts_access:             Annotated[STS_Access_Types | None,        Option  (..., help="Controls who is allowed to send to this story"                                   )] = STS_Access_Types.TEAM,
     shared_team_slugs:      Annotated[str | None,                     Option  (..., help="List of teams' slugs that can send to this story."                               )] = None,
-    sts_skill_conf:         Annotated[bool | None,                    Option  (..., help="Indicate whether workbench should ask for confirmation before running this story")] = None,
+    sts_skill_conf:         Annotated[bool,                           Option  (..., help="Indicate whether workbench should ask for confirmation before running this story")] = False,
     entry_agent_id:         Annotated[int | None,                     Option  (..., help="The ID of the entry action for this story (action must be of type Webhook)"      )] = None,
     exit_agent_ids:         Annotated[str | None,                     Option  (..., help="Array of IDs describing exit actions for this story"                             )] = None,
     team_id:                Annotated[int | None,                     Option  (..., help="The ID of the team to move the story to"                                         )] = None,
     folder_id:              Annotated[int | None,                     Option  (..., help="Story ID"                                                                        )] = None,
-    change_control_enabled: Annotated[bool | None,                    Option  (..., help="Indicate if Change Control is enabled"                                           )] = None
+    change_control_enabled: Annotated[bool,                           Option  (..., help="Indicate if Change Control is enabled"                                           )] = False
 ):
     WorkflowManager.update(
         id, name, description, 
