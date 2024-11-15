@@ -107,6 +107,7 @@ class WorkflowManager:
         change_control_enabled: bool
     ) -> None:
         optional_fields = {
+            "name":                   name,
             "locked":                 locked,
             "priority":               priority,
             "disabled":               disabled,
@@ -117,7 +118,6 @@ class WorkflowManager:
         }
 
         DATA = {
-            "name":              name,
             "add_tag_names":     add_tag_names.split(",") if add_tag_names else None, 
             "remove_tag_names":  remove_tag_names.split(",") if remove_tag_names else None, 
             "sts_access_source": "SPECIFIC_TEAMS" if shared_team_slugs else sts_access_source, 
