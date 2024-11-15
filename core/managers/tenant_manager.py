@@ -5,7 +5,7 @@ from os           import makedirs, remove
 from json         import dump, load, loads
 from os.path      import join, exists, abspath
 from dotenv       import set_key, dotenv_values
-from requests     import get, post, RequestException
+from requests     import get, post, put, RequestException
 
 CONSOLE          = Console(log_path=False)
 DOTENV_FILE      = abspath(".env")
@@ -104,7 +104,8 @@ class TenantManager:
     ) -> Union[ dict | None]:
         METHODS = {
             "get":  get,
-            "post": post
+            "post": post,
+            "put":  put
         }
         TENANT_DATA = TenantManager.tenant_data()
         URL = f"https://{TENANT_DATA['domain']}.tines.com/{endpoint}{f'?{params}' if params else ''}"
