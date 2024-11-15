@@ -1,4 +1,4 @@
-from typer import Typer
+from typer                  import Typer
 from core.commands.tenant   import app as tenant_app
 from core.commands.workflow import app as workflow_app
 
