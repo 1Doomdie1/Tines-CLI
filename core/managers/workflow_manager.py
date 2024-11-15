@@ -86,7 +86,10 @@ class WorkflowManager:
             return req["data"]["stories"]
 
     @staticmethod
-    def update(**kwargs) -> None:
+    def update(
+        id: int,
+        **kwargs
+    ) -> None:
         DATA = kwargs
 
         DATA.update({
@@ -99,7 +102,7 @@ class WorkflowManager:
 
         req = TenantManager.enpoint_call(
             "PUT",
-            f"api/v1/stories/{kwargs['id']}",
+            f"api/v1/stories/{id}",
             json={key: value for key, value in DATA.items() if value != None}
         )
 

@@ -79,7 +79,10 @@ def update(
     folder_id:              Annotated[int | None,                     Option  (..., help="Story ID"                                                                        )] = None,
     change_control_enabled: Annotated[bool | None,                    Option  (..., help="Indicate if Change Control is enabled"                                           )] = None
 ):
-    WorkflowManager.update(**locals())
+    kwargs = locals()
+    del kwargs['id']
+
+    WorkflowManager.update(id, **kwargs)
 
 # @app.command(help="Get workflow details")
 # def info(
