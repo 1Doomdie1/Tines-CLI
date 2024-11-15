@@ -1,7 +1,7 @@
 from core.utils.types               import *
 from rich.table                     import Table
 from rich                           import print
-from typing_extensions              import Annotated
+from typing_extensions              import Annotated, List
 from core.managers.workflow_manager import WorkflowManager
 from typer                          import Typer, Argument, Option
 
@@ -18,7 +18,7 @@ def create(
     disabled:        Annotated[bool,                 Option  (..., help="Boolean flag indicating whether the story is disabled"                         )] = False,
     priority:        Annotated[bool,                 Option  (..., help="Boolean flag indicating if this is a high priority story"                      )] = False
 ):
-    WorkflowManager.create_workflow(team_id, name, description, keep_events_for, folder_id, tags, disabled, priority)
+    WorkflowManager.create(team_id, name, description, keep_events_for, folder_id, tags, disabled, priority)
 
 @app.command(name="list", help="List all workflows")
 def _list(
@@ -108,7 +108,7 @@ def info(
     mode:      Annotated[Workflow_Modes_Types | None, Option  (..., help="The mode (TEST or LIVE) of the story to retrieve")] = Workflow_Modes_Types.ALL,
     format_as: Annotated[Output_Format_Types,         Option  (..., help="Output format"                                   )] = Output_Format_Types.TABLE
 ) -> None:
-    WORKFLOW_DATA = WorkflowManager.get_workflow(id, mode)
+    WORKFLOW_DATA = WorkflowManager.get(id, mode)
 
     if format_as == Output_Format_Types.JSON:
         print(WORKFLOW_DATA)
@@ -121,6 +121,17 @@ def info(
             TABLE.add_row(attribute, f"{value}")
         print(TABLE)
 
+@app.command(help="Delete workflow")
+def delete(
+    id: Annotated[int,  Argument(..., help="Workflow ID")]
+) -> None:
+    WorkflowManager.delete(id)
+
+@app.command(help="Delete multiple workflows")
+def batch_delete(
+    ids: Annotated[List[int],  Argument(..., help="Workflow ID")]
+) -> None:
+    WorkflowManager.delete(ids)
 
 # @app.command(help="Archive workflow")
 # def archive(

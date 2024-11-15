@@ -5,7 +5,7 @@ CONSOLE = Console(log_path=False)
 
 class WorkflowManager:
     @staticmethod
-    def create_workflow(
+    def create(
         team_id:         str,
         name:            str,
         description:     str,
@@ -40,7 +40,7 @@ class WorkflowManager:
             "priority":        priority
         }
 
-        req = TenantManager.enpoint_call(
+        req = TenantManager.endpoint_call(
             "POST",
             "api/v1/stories",
             json=DATA
@@ -75,7 +75,7 @@ class WorkflowManager:
             "order":     order
         }
 
-        req = TenantManager.enpoint_call(
+        req = TenantManager.endpoint_call(
             "GET",
             "api/v1/stories",
             json=DATA
@@ -119,7 +119,7 @@ class WorkflowManager:
 
         if  len(DATA) == 1: CONSOLE.log("At least one option needs to be specified. Please use the '--help' flag"); exit()
 
-        req = TenantManager.enpoint_call(
+        req = TenantManager.endpoint_call(
             "PUT",
             f"api/v1/stories/{id}",
             json=DATA
@@ -135,7 +135,7 @@ class WorkflowManager:
         exit()
 
     @staticmethod
-    def get_workflow(
+    def get(
         id:   int,
         mode: str
     ) -> dict:
@@ -145,7 +145,7 @@ class WorkflowManager:
             "story_mode": mode 
         }
 
-        req = TenantManager.enpoint_call(
+        req = TenantManager.endpoint_call(
             "GET",
             f"api/v1/stories/{id}",
             json=DATA
@@ -157,3 +157,45 @@ class WorkflowManager:
         CONSOLE.log("Error encountered")
         CONSOLE.log("Message: [bold red]{}[/bold red]".format(req["data"][0]))
         exit()
+    
+    @staticmethod
+    def delete(
+        id: int
+    ) -> None:
+
+        DATA = {
+            "story_id": id
+        }
+
+        req = TenantManager.endpoint_call(
+            "DELETE",
+            f"api/v1/stories/{id}",
+            json=DATA
+        )
+
+        if req["status_code"] == 204:
+            CONSOLE.log("Workflow deleted succesfully")
+        else:
+            CONSOLE.log("Error encountered")
+            CONSOLE.log("Message: [bold red]{}[/bold red]".format(req["data"][0]))
+
+    @staticmethod
+    def batch_delete(
+        ids: list
+    ) -> None:
+
+        DATA = {
+            "ids": ids
+        }
+
+        req = TenantManager.endpoint_call(
+            "DELETE",
+            "api/v1/stories/batch",
+            json=DATA
+        )
+
+        if req["status_code"] == 204:
+            CONSOLE.log("Workflow deleted succesfully")
+        else:
+            CONSOLE.log("Error encountered")
+            CONSOLE.log("Message: [bold red]{}[/bold red]".format(req["data"][0]))
