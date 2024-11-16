@@ -1,84 +1,93 @@
-# Tines-CLI
-CLI tool to manage workflows across multiple Tines tenants.
+# Tines-CLI 🚀  
+A powerful CLI tool for managing workflows across multiple [Tines](https://www.tines.com/) tenants.  
 
-# Instalation
-After cloning the repository please install the `requirements` using the following command
+---
+
+## 📥 Installation  
+1. **Clone the Repository**  
+   ```bash
+   $> git clone <repository-url>
+   $> cd tines-cli
+   ```
+2. **Install Dependencies**<br>
+   ```bash
+   $> pip install -r requirements.txt
+   ```
+3. **Set Up the CLI**
+   ```bash
+   $> pip install --editable .
+   ```
+## 🛠️ Capabilities  
+
+<details>
+<summary>Tenant Management</summary>
+
+| **Command**   | **Description**                        |
+|---------------|----------------------------------------|
+| `add`         | Add a new tenant.                      |
+| `delete`      | Remove an existing tenant.             |
+| `checkout`    | Switch to a specific tenant.           |
+| `teams`       | List teams associated with the tenant. |
+| `info`        | Display tenant information.            |
+| `list`        | View all tenants.                      |
+</details>
+
+<details>
+<summary>Workflow Management</summary>
+
+| **Command**     | **Description**                      |
+|:----------------|--------------------------------------|
+| `list`          | View workflows.                      |
+| `info`          | Get details of a specific workflow.  |
+| `create`        | Create a new workflow.               |
+| `update`        | Modify an existing workflow.         |
+| `export`        | Export a workflow to a file.         |
+| `delete`        | Remove a workflow.                   |
+| `batch-delete`  | Delete multiple workflows in one go. |
+</details>
+
+## 🔗 Connecting to Your Tenant
+**Things you'll need**:
+
+- A [Tines API key](https://www.tines.com/api/authentication/)
+- Your tenant's domain (part of the URL):
+    ```
+    URL    = https://<YOUR_TENANT_ID>.tines.com/
+    DOMAIN = <YOUR_TENANT_ID>
+    ```
+
+**Add and Set a Default Tenant**
 ```bash
-pip install requirements.txt
-```
-
-After the requirements are installed please run the `setup.py` script
-```bash
-pip install --editable .
-```
-# Capabilities
-- Tenant Management
-  - add
-  - delete
-  - checkout
-  - teams
-  - info
-  - list
-
-- Workflow Management
-  - list
-  - info
-  - create
-  - update
-  - export
-  - delete
-  - batch-delete
-
-# How to connect to your tenant
-For this you will need a [tines api key](https://www.tines.com/api/authentication/) and your tenant domain. To get your tenant domain just login to tines and copy this part of the url `https://<YOUR_TENANT_ID>.tines.com/`.
-```
-URL    = https://cool-domain-1234.tines.com/
-DOMAIN = cool-domain-1234
-```
-Now you can run this command
-```
 $> tines tenant add cool-domain-1234 qwertyuio-123 --checkout
-                          ^              ^              ^
-                          |              |              |
-                        Domain        API Key    Use this tenant by default
 
-[14:40:29] Tenant 'cool-domain-1234' added successfully
+[14:40:29] Tenant 'cool-domain-1234' added successfully  
            Now using 'cool-domain-1234' tenant
 ```
+**Output**
 
-To get tenant info use this command
-```
-$> tines tenant info
-┏━━━━━━┳━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓
-┃ Name ┃  Type  ┃  Region   ┃  Egress IPs   ┃
-┡━━━━━━╇━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━━━━━┩
-│ eu2  │ shared │ eu-west-1 │ 10.10.101.110 │
-│      │        │           │ 20.20.202.220 │
-└──────┴────────┴───────────┴───────────────┘
-```
 
-For more information on what commands you can use please use the `--help` flag
-```
-$> tines --help
-$> tines tenant --help
-$> tines tenant add --help
-```
+## ✍️ Creating a Workflow
+To create a workflow, you'll need the `team_id`
+1. **List Teams**
+    ```bash
+    $> tines tenant teams
 
-# Creating a workflow
-To create a workflow you will need the `team_id` which can be obtained like so
-```
-$> tines tenant teams
-┏━━━━━━━┳━━━━━━━━━━━━━━━┓
-┃  ID   ┃     Name      ┃
-┡━━━━━━━╇━━━━━━━━━━━━━━━┩
-│ 12345 │ Forensics Lab │
-└───────┴───────────────┘
-```
+    ┏━━━━━━━┳━━━━━━━━━━━━━━━┓
+    ┃  ID   ┃     Name      ┃
+    ┡━━━━━━━╇━━━━━━━━━━━━━━━┩
+    │ 12345 │ My Cool Team  │
+    └───────┴───────────────┘
+    ```
+2. **Create Workflow**
+    ```bash
+    $> tines workflow create "My cool story name" --team-id=12345
 
-Now use the following command
-```
-$> tines workflow create "My cool story name" --team-id=12345
+    [14:45:44] Workflow 'My cool story name' has been created successfully  
+               Link: https://cool-domain-1234.tines.com/stories/56789
+    ```
+## 📖 Help
+At any point the `--help` flag can be used to show what `args`, `options` or `flags` can be used
 
-[14:45:44] Workflow 'My cool story name' has been created succesfully
-           Link: https://cool-domain-1234.tines.com/stories/56789
-```
+## ❤️ Contributing
+Contributions are welcome! Feel free to submit a pull request or raise an issue.
+
