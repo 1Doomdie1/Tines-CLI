@@ -44,6 +44,7 @@ A powerful CLI tool for managing workflows across multiple [Tines](https://www.t
 | `import`        | Import a workflow to remote tenant.  |
 | `export`        | Export a workflow to a file.         |
 | `delete`        | Remove a workflow.                   |
+| `exports`       | Get a list of local exports.         |
 | `batch-delete`  | Delete multiple workflows in one go. |
 </details>
 
