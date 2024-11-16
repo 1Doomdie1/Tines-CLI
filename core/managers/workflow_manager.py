@@ -1,5 +1,7 @@
+from pathlib                      import Path
 from rich.console                 import Console
 from core.managers.tenant_manager import TenantManager
+from json                         import load, JSONDecodeError
 
 CONSOLE = Console(log_path=False)
 
@@ -222,3 +224,45 @@ class WorkflowManager:
             CONSOLE.log("Error encountered")
             CONSOLE.log("Message: [bold red]{}[/bold red]".format(req["data"][0]))
             exit()
+
+    @staticmethod
+    def _import(
+        file:      Path,
+        new_name:  str,
+        team_id:   int,
+        folder_id: int,
+        mode:      str
+    ) -> None:
+        try:
+            with open(file, "r") as file:
+                STORY_DATA = load(file)
+
+            OPTIONAL_FLAGS = {
+                "folder_id": folder_id,
+            }
+
+            DATA = {
+                "data": STORY_DATA,
+                "new_name": new_name,
+                "team_id": team_id,
+                "mode": mode,
+                **{key: value for key, value in OPTIONAL_FLAGS.items() if value != None}
+            }
+
+            req = TenantManager.endpoint_call(
+                "POST",
+                f"api/v1/stories/import",
+                json=DATA
+            )
+
+            if req["status_code"] == 200:
+                CONSOLE.log("Workflow has been imported successfully")
+            else:
+                CONSOLE.log("Error encountered")
+                CONSOLE.log("Message: [bold red]{}[/bold red]".format(req["data"][0]))
+        except JSONDecodeError:
+            CONSOLE.log("Error encountered")
+            CONSOLE.log(f"Message: [bold red]Invalid workflow format. File format must be json and not emplty.[/bold red]")
+        except FileNotFoundError as e:
+            CONSOLE.log("Error encountered")
+            CONSOLE.log(f"Message: [bold red]{e}[/bold red]")
