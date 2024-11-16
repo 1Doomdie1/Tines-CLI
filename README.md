@@ -6,7 +6,7 @@ A powerful CLI tool for managing workflows across multiple [Tines](https://www.t
 ## 📥 Installation  
 1. **Clone the Repository**  
    ```bash
-   $> git clone <repository-url>
+   $> git clone https://github.com/1Doomdie1/Tines-CLI
    $> cd tines-cli
    ```
 2. **Install Dependencies**<br>
