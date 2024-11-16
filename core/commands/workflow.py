@@ -159,17 +159,3 @@ def export(
 
     CONSOLE.log("Workflow succesfully exported")
     CONSOLE.log(f"PATH: \'{output_path}\'")
-
-
-# @app.command(help="Archive workflow")
-# def archive(
-#     id: Annotated[int, Argument(..., help="Workflow ID")]
-# ):
-#     ...
-
-# @app.command(help="Delete workflow")
-# def delete(
-#     id: Annotated[int, Argument(..., help="Workflow ID")]
-# ):
-#     ...
-
