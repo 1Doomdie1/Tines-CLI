@@ -159,3 +159,13 @@ def export(
 
     CONSOLE.log("Workflow succesfully exported")
     CONSOLE.log(f"PATH: \'{output_path}\'")
+
+@app.command(name="import", help="Import local workflow to remote tenant")
+def _import(
+    file:      Annotated[Path,                  Argument(..., help="Path to local workflow"    )],
+    new_name:  Annotated[str,                   Option  (..., help="The new name for the story")],
+    team_id:   Annotated[int,                   Option  (..., help="Team ID"                   )],
+    folder_id: Annotated[int | None,            Option  (..., help="Folder ID"                 )] = None,
+    mode:      Annotated[Workflow_Import_Types, Option  (..., help="The new name for the story")] = Workflow_Import_Types.NEW,
+) -> None:
+    WorkflowManager._import(abspath(file), new_name, team_id, folder_id, mode) 

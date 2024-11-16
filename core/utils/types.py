@@ -50,3 +50,7 @@ class Workflow_Modes_Types(StrEnum):
     LIVE = "LIVE"
     TEST = "TEST"
     ALL  = "*"
+
+class Workflow_Import_Types(StrEnum):
+    NEW             = "new"
+    VERSION_REPLACE = "versionReplace"
