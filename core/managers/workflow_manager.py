@@ -195,7 +195,7 @@ class WorkflowManager:
         )
 
         if req["status_code"] == 204:
-            CONSOLE.log("Workflow deleted succesfully")
+            CONSOLE.log("Workflows deleted succesfully")
         else:
             CONSOLE.log("Error encountered")
             CONSOLE.log("Message: [bold red]{}[/bold red]".format(req["data"][0]))
