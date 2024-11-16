@@ -103,10 +103,10 @@ class TenantManager:
         **kwargs
     ) -> Union[ dict | None]:
         METHODS = {
-            "get":  get,
-            "post": post,
-            "put":  put,
-            "delete":  delete
+            "get":    get,
+            "post":   post,
+            "put":    put,
+            "delete": delete
         }
 
         TENANT_DATA = TenantManager.tenant_data()
