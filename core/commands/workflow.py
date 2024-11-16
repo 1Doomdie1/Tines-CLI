@@ -139,7 +139,7 @@ def delete(
 def batch_delete(
     ids: Annotated[List[int],  Argument(..., help="Workflow ID")]
 ) -> None:
-    WorkflowManager.delete(ids)
+    WorkflowManager.batch_delete(ids)
 
 @app.command(help="Export workflow")
 def export(
