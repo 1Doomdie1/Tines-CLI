@@ -17,7 +17,7 @@ makedirs(TENANT_DIRECTORY, exist_ok=True)
 # Create .env file if it doesn't exist
 if not exists(DOTENV_FILE):
     with open(DOTENV_FILE, "w"):
-        set_key(DOTENV_FILE, "USE_TENANT", "")
+        set_key(DOTENV_FILE, "USE_TENANT", "None")
 
 class TenantManager:
 
