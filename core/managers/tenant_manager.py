@@ -81,13 +81,6 @@ class TenantManager:
             return load(file)
 
     @staticmethod
-    def tenant_teams() -> list:
-        return TenantManager.endpoint_call(
-            "GET",
-            "api/v1/teams"
-        )["data"]["teams"]
-
-    @staticmethod
     def list_local_tenants() -> list:
         TENANTS = [tenant.name for tenant in scandir(TENANT_DIRECTORY) if tenant.is_file()]
 

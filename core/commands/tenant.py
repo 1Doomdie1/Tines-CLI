@@ -12,34 +12,21 @@ def add(
     api_key:   Annotated[str,  Argument(...,          help="User API key"                       )],
     checkout_: Annotated[bool, Option  ("--checkout", help="Use tenant"                         )] = False,
     overwrite: Annotated[bool, Option  (...,          help="Overwrite local tenant confing file")] = False
-):
+) -> None:
     TenantManager.add_tenant(domain, api_key, checkout_, overwrite)
 
 @app.command(help="Delete local tenant")
-def delete():
+def delete() -> None:
     TenantManager.delete_tenant()
 
 @app.command(help="Switch to other tenants")
 def checkout(
     domain: Annotated[str, Argument(..., help="Tenant ID")]
-):
+) -> None:
     TenantManager.checkout_tenant(domain)
 
-@app.command(help="Show all teams in the tenant")
-def teams():
-    TABLE = Table()
-    TEAMS = TenantManager.tenant_teams()
-
-    TABLE.add_column("ID",   justify="center")
-    TABLE.add_column("Name", justify="center")
-
-    for team in TEAMS:
-        TABLE.add_row(str(team["id"]), team["name"])
-
-    print(TABLE)
-
 @app.command(help="Show tenant details")
-def info():
+def info() -> None:
 
     tenant_data = TenantManager.enpoint_call("GET", "api/v1/info")["data"]["stack"]
     
@@ -53,9 +40,8 @@ def info():
     
     print(TABLE)
 
-
 @app.command(name="list", help="List all local available tenants")
-def _list():
+def _list() -> None:
     
     TENANTS = TenantManager.list_local_tenants()
     
