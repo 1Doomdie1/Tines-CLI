@@ -62,7 +62,7 @@ def _list(
                 f'{story["send_to_story_enabled"]}'
             )
 
-        CONSOLE.log(TABLE)
+        CONSOLE.print(TABLE)
     elif format_as == Output_Format_Types.JSON:
         CONSOLE.log(STORIES)
 
@@ -127,7 +127,7 @@ def info(
 
         for attribute, value in WORKFLOW_DATA.items():
             TABLE.add_row(attribute, f"{value}")
-        CONSOLE.log(TABLE)
+        CONSOLE.print(TABLE)
 
 @app.command(help="Delete workflow")
 def delete(
