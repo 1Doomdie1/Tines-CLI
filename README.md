@@ -27,7 +27,6 @@ A powerful CLI tool for managing workflows across multiple [Tines](https://www.t
 | `add`         | Add a new tenant.                      |
 | `delete`      | Remove an existing tenant.             |
 | `checkout`    | Switch to a specific tenant.           |
-| `teams`       | List teams associated with the tenant. |
 | `info`        | Display tenant information.            |
 | `list`        | View all tenants.                      |
 </details>
@@ -35,18 +34,35 @@ A powerful CLI tool for managing workflows across multiple [Tines](https://www.t
 <details>
 <summary>Workflow Management</summary>
 
-| **Command**     | **Description**                      |
-|:----------------|--------------------------------------|
-| `list`          | View workflows.                      |
-| `info`          | Get details of a specific workflow.  |
-| `create`        | Create a new workflow.               |
-| `update`        | Modify an existing workflow.         |
-| `import`        | Import a workflow to remote tenant.  |
-| `export`        | Export a workflow to a file.         |
-| `delete`        | Remove a workflow.                   |
-| `exports`       | Get a list of local exports.         |
-| `batch-delete`  | Delete multiple workflows in one go. |
+| **Command**    | **Description**                      |
+|:---------------|--------------------------------------|
+| `list`         | View workflows.                      |
+| `info`         | Get details of a specific workflow.  |
+| `create`       | Create a new workflow.               |
+| `update`       | Modify an existing workflow.         |
+| `import`       | Import a workflow to remote tenant.  |
+| `export`       | Export a workflow to a file.         |
+| `delete`       | Remove a workflow.                   |
+| `exports`      | Get a list of local exports.         |
+| `batch-delete` | Delete multiple workflows in one go. |
 </details>
+
+<details>
+<summary>Teams Management</summary>
+
+| **Command**      | **Description**           |
+|:-----------------|---------------------------|
+| `list`           | View teams.               |
+| `info`           | Get team details.         |
+| `create`         | Create team.              |
+| `update`         | Update team.              |
+| `delete`         | Delete team.              |
+| `members`        | List team members.        |
+| `remove-member`  | Remove member from team.  |
+| `invite-member`  | Invite member to team.    |
+</details>
+
+
 
 ## 🔗 Connecting to Your Tenant
 **Things you'll need**:
