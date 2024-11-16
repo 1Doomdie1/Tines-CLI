@@ -54,3 +54,8 @@ class Workflow_Modes_Types(StrEnum):
 class Workflow_Import_Types(StrEnum):
     NEW             = "new"
     VERSION_REPLACE = "versionReplace"
+
+class Team_Member_Types(StrEnum):
+    VIEWER     = "VIEWER"
+    EDITOR     = "EDITOR"
+    TEAM_ADMIN = "TEAM_ADMIN"
