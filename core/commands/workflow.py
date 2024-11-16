@@ -3,10 +3,10 @@ from json                           import dump
 from pathlib                        import Path
 from rich.table                     import Table
 from rich.console                   import Console
-from os                             import makedirs
 from os.path                        import abspath, join
-from typing_extensions              import Annotated, List
 from core.managers.workflow_manager import WorkflowManager
+from typing_extensions              import Annotated, List
+from os                             import makedirs, scandir
 from typer                          import Typer, Argument, Option
 
 
@@ -168,4 +168,20 @@ def _import(
     folder_id: Annotated[int | None,            Option  (..., help="Folder ID"                 )] = None,
     mode:      Annotated[Workflow_Import_Types, Option  (..., help="The new name for the story")] = Workflow_Import_Types.NEW,
 ) -> None:
-    WorkflowManager._import(abspath(file), new_name, team_id, folder_id, mode) 
+    WorkflowManager._import(abspath(file), new_name, team_id, folder_id, mode)
+
+@app.command(help="List all exported workflows")
+def exports() -> None:
+    makedirs(EXPORTS_PATH, exist_ok=True)
+
+    EXPORTS = [tenant.name for tenant in scandir(EXPORTS_PATH) if tenant.is_file()]
+
+    if EXPORTS:
+        TABLE = Table()
+        TABLE.add_column("Name", justify="center")
+
+        for entry in EXPORTS:
+            TABLE.add_row(entry)
+        CONSOLE.print(TABLE)
+    else:
+        CONSOLE.log("No exports found")
