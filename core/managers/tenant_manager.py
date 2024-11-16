@@ -119,7 +119,7 @@ class TenantManager:
         try:
             req = METHODS[method.lower()](URL, **kwargs)
             return {
-                "data":        loads(req.content),
+                "data":        loads(req.content) if req.content else {},
                 "status_code": req.status_code
             }
         except RequestException as e:
