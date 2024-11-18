@@ -162,13 +162,11 @@ class TeamsManager:
     def invite_member(
         team_id: int,
         email:   str,
-        user_id: int,
         role:    str
     ) -> None:
 
         OPTIONAL_FLAGS = {
-            "email":   email,
-            "user_id": user_id
+            "email":   email
         }
 
         DATA = {

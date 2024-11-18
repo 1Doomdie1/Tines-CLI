@@ -1,13 +1,30 @@
 from core.utils.types           import *
 from rich.table                 import Table
 from rich.console               import Console
+from typing_extensions          import Annotated
 from core.managers.team_manager import TeamsManager
-from typing_extensions          import Annotated, List
-from typer                      import Typer, Argument, Option, prompt
+from core.commands.member       import list_members
+from core.commands.member       import app as member_app
+from typer                      import Typer, Argument, Option, Context, Exit
+
 
 app = Typer()
+app.add_typer(member_app)
 
 CONSOLE = Console(log_path=False)
+
+@app.callback()
+def manage_team_flags(
+    ctx: Context,
+    tid: int = Option(None, help="Team ID"),
+) -> None:
+    ctx.obj = {"tid": tid}
+
+    if ctx.invoked_subcommand in {"info", "update", "delete", "member"} and tid is None:
+        CONSOLE.log("Error: --tid is required for this command.")
+        CONSOLE.log("Usage: tines team --tid=<ID> (info | udpate | delete | member)")
+        raise Exit(1)
+
 
 @app.command(help="Create new team")
 def create(
@@ -17,11 +34,12 @@ def create(
 
 @app.command(help="Get team info")
 def info(
-    team_id:         Annotated[int,                 Argument(..., help="Team ID"          )],
     include_members: Annotated[bool,                Option  (..., help="Show team members")] = False,
-    format_as:       Annotated[Output_Format_Types, Option  (..., help="Output format"    )] = Output_Format_Types.TABLE
+    format_as:       Annotated[Output_Format_Types, Option  (..., help="Output format"    )] = Output_Format_Types.TABLE,
+    ctx:             Context                                                                 = Context
 ) -> None:
-    TEAM_INFO = TeamsManager.get(team_id)
+    tid = ctx.obj.get("tid")
+    TEAM_INFO = TeamsManager.get(tid)
     
     if format_as == Output_Format_Types.TABLE:
         CONSOLE.print(f"[bold]Team ID:[/bold] {TEAM_INFO['id']}")
@@ -42,7 +60,7 @@ def info(
 
     if include_members:
             print("\n")
-            members(team_id, format_as)
+            list_members(format_as)
 
 @app.command(help="List teams", name="list")
 def _list(
@@ -64,59 +82,13 @@ def _list(
 
 @app.command(help="Update team")
 def update(
-    team_id: Annotated[int, Argument(..., help="Team ID"      )],
-    name:    Annotated[str, Option  (..., help="New team name")],
+    name: Annotated[str, Option(..., help="New team name")],
+    ctx:  Context = Context
 ) -> None:
-    TeamsManager.update(team_id, name)
+    TeamsManager.update(ctx.obj.get("tid"), name)
 
 @app.command(help="Delete team (Dangerous!!!)")
 def delete(
-    team_id: Annotated[int, Argument(..., help="Team ID")]
+    ctx: Context = Context
 ) -> None:
-    TeamsManager.delete(team_id)
-
-@app.command(help="Get team members")
-def members(
-    team_id:   Annotated[int,                 Argument(..., help="Team ID"      )],
-    format_as: Annotated[Output_Format_Types, Option  (..., help="Output format")] = Output_Format_Types.TABLE
-) -> None:
-    MEMBERS = TeamsManager.members(team_id)
-
-    if format_as == Output_Format_Types.TABLE:
-        TABLE = Table(title="Members", title_justify="left")
-        
-        for column in MEMBERS[0].keys():
-            TABLE.add_column(column.capitalize().replace("_", " "))
-
-        for member in MEMBERS:
-            TABLE.add_row(
-                f'{member["id"]}', member["first_name"], member["last_name"],
-                member["email"], f'{member["is_admin"]}', member["created_at"],
-                member["last_seen"], f'{member["invitation_accepted"]}', member["role"]
-            )
-        CONSOLE.print(TABLE)
-    elif format_as == Output_Format_Types.JSON:
-        CONSOLE.print(MEMBERS)
-
-@app.command(help="Remove member from team")
-def remove_member(
-    user_id: Annotated[int, Argument(..., help="User ID")],
-    team_id: Annotated[int, Option  (..., help="Team ID")]
-) -> None:
-    TeamsManager.remove_member(team_id, user_id)
-
-@app.command(help="Invite member to team")
-def invite_member(
-    team_id: Annotated[int,               Argument(..., help="Team ID"   )],
-    email:   Annotated[str | None,        Option  (..., help="User email")] = None,
-    user_id: Annotated[int | None,        Option  (..., help="User ID"   )] = None,
-    role:    Annotated[Team_Member_Types, Option  (..., help="Team ID"   )] = Team_Member_Types.VIEWER
-) -> None:
-    if email and user_id:
-        CONSOLE.log("Please specify either the 'email' or 'user_id' not both")
-        exit()
-    elif not email and not user_id:
-        CONSOLE.log("'email' or 'user_id' must be specified")
-        exit()
-
-    TeamsManager.invite_member(team_id, email, user_id, role)
+    TeamsManager.delete(ctx.obj.get("tid"))
