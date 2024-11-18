@@ -30,14 +30,14 @@ def manage_workflow_flags(
 
 @app.command(help="Create workflow")
 def create(
-    name:            Annotated[str,                  Argument(..., help="The story name"                                                                )],
-    team_id:         Annotated[int,                  Option  (..., help="ID of team to which the story should be added"                                 )],
-    description:     Annotated[str,                  Option  (..., help="A user-defined description of the story"                                       )] = "Created with Tines-CLI",
-    keep_events_for: Annotated[keep_events_for_type, Option  (..., help="Event retention period"                                                        )] = keep_events_for_type._1d,
-    folder_id:       Annotated[int | None,           Option  (..., help="ID of folder to which the story should be added"                               )] = None,
-    tags:            Annotated[str | None,           Option  (..., help="An array of Strings separated by ',' used to create tags to classify the story")] = None,
-    disabled:        Annotated[bool,                 Option  (..., help="Boolean flag indicating whether the story is disabled"                         )] = False,
-    priority:        Annotated[bool,                 Option  (..., help="Boolean flag indicating if this is a high priority story"                      )] = False
+    name:            Annotated[str,                  Option(..., help="The story name"                                                                )],
+    team_id:         Annotated[int,                  Option(..., help="ID of team to which the story should be added"                                 )],
+    description:     Annotated[str,                  Option(..., help="A user-defined description of the story"                                       )] = "Created with Tines-CLI",
+    keep_events_for: Annotated[keep_events_for_type, Option(..., help="Event retention period"                                                        )] = keep_events_for_type._1d,
+    folder_id:       Annotated[int | None,           Option(..., help="ID of folder to which the story should be added"                               )] = None,
+    tags:            Annotated[str | None,           Option(..., help="An array of Strings separated by ',' used to create tags to classify the story")] = None,
+    disabled:        Annotated[bool,                 Option(..., help="Boolean flag indicating whether the story is disabled"                         )] = False,
+    priority:        Annotated[bool,                 Option(..., help="Boolean flag indicating if this is a high priority story"                      )] = False
 ):
     WorkflowManager.create(team_id, name, description, keep_events_for, folder_id, tags, disabled, priority)
 
