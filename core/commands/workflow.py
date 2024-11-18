@@ -3,17 +3,30 @@ from json                           import dump
 from pathlib                        import Path
 from rich.table                     import Table
 from rich.console                   import Console
+from typing_extensions              import Annotated
 from os.path                        import abspath, join
 from core.managers.workflow_manager import WorkflowManager
-from typing_extensions              import Annotated, List
 from os                             import makedirs, scandir
-from typer                          import Typer, Argument, Option
+from typer                          import Typer, Argument, Option, Context, Exit
 
 
 EXPORTS_PATH = abspath("exports")
 CONSOLE = Console(log_path=False)
 
 app = Typer()
+
+@app.callback()
+def manage_team_flags(
+    ctx: Context,
+    wid: int = Option(None, help="Workflow ID"),
+) -> None:
+    ctx.obj = {"wid": wid}
+
+    if ctx.invoked_subcommand in {"info", "update", "delete", "export"} and wid is None:
+        CONSOLE.log("Error: --wid is required for this command.")
+        CONSOLE.log("Usage: tines workflow --wid=<ID> (update | info | delete | export)")
+        raise Exit(1)
+
 
 @app.command(help="Create workflow")
 def create(
@@ -68,7 +81,6 @@ def _list(
 
 @app.command(help="Update a story. If change control is enabled on the story the request will be performed on the test story")
 def update(
-    id:                     Annotated[int,                            Argument(..., help="Story ID"                                              )],
     name:                   Annotated[str | None,                     Option  (..., help="Story name"                                            )] = None,
     description:            Annotated[str | None,                     Option  (..., help="A user-defined description of the story"               )] = None,
     add_tag_names:          Annotated[str | None,                     Option  (..., help="Array of tag names to add to the story"                )] = None,
@@ -87,11 +99,12 @@ def update(
     folder_id:              Annotated[int | None,                     Option  (..., help="Story ID"                                              )] = None,
     change_control_enabled: Annotated[bool | None,                    Option  (..., help="Indicate if Change Control is enabled"                 )] = None,
     format_as:              Annotated[Output_Format_Types,            Option  (..., help="Output format"                                         )] = Output_Format_Types.TABLE,
-    verbose:                Annotated[bool,                           Option  (..., help="Verbose"                                               )] = False
+    verbose:                Annotated[bool,                           Option  (..., help="Verbose"                                               )] = False,
+    ctx:                    Context                                                                                                                 = Context
 ) -> None:
 
     UPDATED_VALUES = WorkflowManager.update(
-        id, name, description, add_tag_names,
+        ctx.obj.get("wid") , name, description, add_tag_names,
         remove_tag_names, keep_events_for, disabled, locked,
         priority, sts_access_source, sts_access, shared_team_slugs,
         sts_skill_conf, entry_agent_id, exit_agent_ids, team_id,
@@ -112,11 +125,11 @@ def update(
 
 @app.command(help="Get workflow details")
 def info(
-    id:        Annotated[int,                         Argument(..., help="Workflow ID"                                     )],
     mode:      Annotated[Workflow_Modes_Types | None, Option  (..., help="The mode (TEST or LIVE) of the story to retrieve")] = Workflow_Modes_Types.ALL,
-    format_as: Annotated[Output_Format_Types,         Option  (..., help="Output format"                                   )] = Output_Format_Types.TABLE
+    format_as: Annotated[Output_Format_Types,         Option  (..., help="Output format"                                   )] = Output_Format_Types.TABLE,
+    ctx:       Context                                                                                                        = Context
 ) -> None:
-    WORKFLOW_DATA = WorkflowManager.get(id, mode)
+    WORKFLOW_DATA = WorkflowManager.get(ctx.obj.get("wid"), mode)
 
     if format_as == Output_Format_Types.JSON:
         CONSOLE.log(WORKFLOW_DATA)
@@ -131,25 +144,25 @@ def info(
 
 @app.command(help="Delete workflow")
 def delete(
-    id: Annotated[int,  Argument(..., help="Workflow ID")]
+    ctx: Context = Context
 ) -> None:
-    WorkflowManager.delete(id)
+    WorkflowManager.delete(ctx.obj.get("wid"))
 
 @app.command(help="Delete multiple workflows")
 def batch_delete(
-    ids: Annotated[List[int],  Argument(..., help="Workflow ID")]
+    ctx: Context = Context
 ) -> None:
-    WorkflowManager.batch_delete(ids)
+    WorkflowManager.batch_delete(ctx.obj.get("wid"))
 
 @app.command(help="Export workflow")
 def export(
-    id:             Annotated[int,  Argument(..., help="Workflow ID"                      )],
     output:         Annotated[Path, Option  (..., help="Output path"                      )] = EXPORTS_PATH,
-    randomize_urls: Annotated[bool, Option  (..., help="Randomize webhooks and pages urls")] = False
+    randomize_urls: Annotated[bool, Option  (..., help="Randomize webhooks and pages urls")] = False,
+    ctx:            Context                                                                  = Context
 ) -> None:
     makedirs(EXPORTS_PATH, exist_ok=True)
 
-    EXPORT_DATA = WorkflowManager.export(id, randomize_urls)
+    EXPORT_DATA = WorkflowManager.export(ctx.obj.get("wid"), randomize_urls)
 
     name = EXPORT_DATA["name"].replace(" ", "_")
     output_path = abspath(join(output, f"{name}.json"))
