@@ -8,12 +8,12 @@ app = Typer()
 
 @app.command(help="Add tenant locally")
 def add(
-    domain:    Annotated[str,  Argument(...,          help="Tenant domain ID"                   )],
-    api_key:   Annotated[str,  Argument(...,          help="User API key"                       )],
-    checkout_: Annotated[bool, Option  ("--checkout", help="Use tenant"                         )] = False,
-    overwrite: Annotated[bool, Option  (...,          help="Overwrite local tenant confing file")] = False
+    domain:    Annotated[str,  Option(..., help="Tenant domain ID"                   )],
+    api_key:   Annotated[str,  Option(..., help="User API key"                       )],
+    checkout:  Annotated[bool, Option(..., help="Use tenant"                         )] = False,
+    overwrite: Annotated[bool, Option(..., help="Overwrite local tenant confing file")] = False
 ) -> None:
-    TenantManager.add_tenant(domain, api_key, checkout_, overwrite)
+    TenantManager.add_tenant(domain, api_key, checkout, overwrite)
 
 @app.command(help="Delete local tenant")
 def delete() -> None:
