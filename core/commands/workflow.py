@@ -16,7 +16,7 @@ CONSOLE = Console(log_path=False)
 app = Typer()
 
 @app.callback()
-def manage_team_flags(
+def manage_workflow_flags(
     ctx: Context,
     wid: int = Option(None, help="Workflow ID"),
 ) -> None:
