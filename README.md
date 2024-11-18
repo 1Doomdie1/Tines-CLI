@@ -22,7 +22,6 @@ A powerful CLI tool for managing workflows across multiple [Tines](https://www.t
 <details>
 <summary>Tenant Management</summary>
 
-
 | **Command** | **Syntax**                                               | **Description**              |
 |-------------|----------------------------------------------------------|------------------------------|
 | `list`      | `tines tenant list`                                      | View all tenants.            |
