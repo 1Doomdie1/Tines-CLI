@@ -23,52 +23,52 @@ A powerful CLI tool for managing workflows across multiple [Tines](https://www.t
 <summary>Tenant Management</summary>
 
 
-| **Command**   | **Description**                        |
-|---------------|----------------------------------------|
-| `add`         | Add a new tenant.                      |
-| `delete`      | Remove an existing tenant.             |
-| `checkout`    | Switch to a specific tenant.           |
-| `info`        | Display tenant information.            |
-| `list`        | View all tenants.                      |
+| **Command** | **Syntax**                                               | **Description**              |
+|-------------|----------------------------------------------------------|------------------------------|
+| `list`      | `tines tenant list`                                      | View all tenants.            |
+| `info`      | `tines tenant info`                                      | Display tenant information.  |
+| `delete`    | `tines tenant delete`                                    | Remove an existing tenant.   |
+| `add`       | `tines tenant add --domain=<DOMAIN> --api-key=<API-key>` | Add a new tenant.            |
+| `checkout`  | `tines tenant checkout --domain=<DOMAIN>`                | Switch to a specific tenant. |
 </details>
 
 <details>
 <summary>Workflow Management</summary>
 
-| **Command**    | **Description**                      |
-|:---------------|--------------------------------------|
-| `list`         | View workflows.                      |
-| `info`         | Get details of a specific workflow.  |
-| `create`       | Create a new workflow.               |
-| `update`       | Modify an existing workflow.         |
-| `import`       | Import a workflow to remote tenant.  |
-| `export`       | Export a workflow to a file.         |
-| `delete`       | Remove a workflow.                   |
-| `exports`      | Get a list of local exports.         |
-| `batch-delete` | Delete multiple workflows in one go. |
+| **Command**    | **Syntax**                                              | **Description**                      |
+|:---------------|---------------------------------------------------------|--------------------------------------|
+| `list`         | `tines workflow list`                                   | View workflows.                      |
+| `info`         | `tines workflow --wid=<ID> info`                        | Get details of a specific workflow.  |
+| `create`       | `tines workflow create --name=<NAME> --team-id=<ID>`    | Create a new workflow.               |
+| `update`       | `tines workflow --wid=<ID> update [OPTIONS]`            | Modify an existing workflow.         |
+| `import`       | `tines workflow import --file=<PATH> --new-name=<NAME>` | Import a workflow to remote tenant.  |
+| `export`       | `tines workflow export [OPTIONS]`                       | Export a workflow to a file.         |
+| `delete`       | `tines workflow --wid=<ID> delete`                      | Remove a workflow.                   |
+| `exports`      | `tines workflow exports`                                | Get a list of local exports.         |
+| `batch-delete` | `tines workflow <IDS>`                                  | Delete multiple workflows in one go. |
 </details>
 
 <details>
 <summary>Teams Management</summary>
 
-| **Command**      | **Description**           |
-|:-----------------|---------------------------|
-| `list`           | View teams.               |
-| `info`           | Get team details.         |
-| `create`         | Create team.              |
-| `update`         | Update team.              |
-| `delete`         | Delete team.              |
-| `member`         | Manage team members.      |
+| **Command** | **Syntax**                                      | **Description**      |
+|:------------|-------------------------------------------------|----------------------|
+| `list`      | `tines team list`                               | View teams.          |
+| `info`      | `tines team --tid=<ID> info`                    | Get team details.    |
+| `create`    | `tines team create <NAME>`                      | Create team.         |
+| `update`    | `tines team --tid=<ID> update [OPTIONS]`        | Update team.         |
+| `delete`    | `tines team --tid=<ID> delete`                  | Delete team.         |
+| `member`    | `tines team --tid=<ID> member [OPTIONS] [ARGS]` | Manage team members. |
 </details>
 
 <details>
 <summary>Members Management (Team)</summary>
 
-| **Command**      | **Description**           |
-|:-----------------|---------------------------|
-| `list`           | View members of a team.   |
-| `remove`         | Remove member from team.  |
-| `invite`         | Invite member to team.    |
+| **Command** | **Syntax**                                            | **Description**           |
+|:------------|-------------------------------------------------------|---------------------------|
+| `list`      | `tines team --tid=<ID> member list`                   | View members of a team.   |
+| `remove`    | `tines team --tid=<ID> member --uid=<ID> remove`      | Remove member from team.  |
+| `invite`    | `tines team --tid=<ID> member invite --email=<EMAIL>` | Invite member to team.    |
 </details>
 
 
