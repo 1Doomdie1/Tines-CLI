@@ -119,7 +119,7 @@ To create a workflow, you'll need the `team_id`
     ```
 2. **Create Workflow**
     ```bash
-    $> tines workflow create "My cool story name" --team-id=12345
+    $> tines workflow create --name="My cool story name" --team-id=12345
 
     [14:45:44] Workflow 'My cool story name' has been created successfully  
                Link: https://cool-domain-1234.tines.com/stories/56789
