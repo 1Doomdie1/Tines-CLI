@@ -22,6 +22,7 @@ A powerful CLI tool for managing workflows across multiple [Tines](https://www.t
 <details>
 <summary>Tenant Management</summary>
 
+
 | **Command**   | **Description**                        |
 |---------------|----------------------------------------|
 | `add`         | Add a new tenant.                      |
@@ -57,11 +58,18 @@ A powerful CLI tool for managing workflows across multiple [Tines](https://www.t
 | `create`         | Create team.              |
 | `update`         | Update team.              |
 | `delete`         | Delete team.              |
-| `members`        | List team members.        |
-| `remove-member`  | Remove member from team.  |
-| `invite-member`  | Invite member to team.    |
+| `member`         | Manage team members.      |
 </details>
 
+<details>
+<summary>Members Management (Team)</summary>
+
+| **Command**      | **Description**           |
+|:-----------------|---------------------------|
+| `list`           | View members of a team.   |
+| `remove`         | Remove member from team.  |
+| `invite`         | Invite member to team.    |
+</details>
 
 
 ## 🔗 Connecting to Your Tenant
@@ -88,7 +96,7 @@ $> tines tenant add cool-domain-1234 qwertyuio-123 --checkout
 To create a workflow, you'll need the `team_id`
 1. **List Teams**
     ```bash
-    $> tines tenant teams
+    $> tines team list
 
     ┏━━━━━━━┳━━━━━━━━━━━━━━━┓
     ┃  ID   ┃     Name      ┃
