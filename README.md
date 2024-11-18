@@ -82,14 +82,27 @@ A powerful CLI tool for managing workflows across multiple [Tines](https://www.t
     DOMAIN = <YOUR_TENANT_ID>
     ```
 
-**Add and Set a Default Tenant**
+**Add Tenant**
 ```bash
-$> tines tenant add cool-domain-1234 qwertyuio-123 --checkout
+$> tines tenant add --domain=cool-domain-1234 --api-key=qwertyuio-123
 
 [14:40:29] Tenant 'cool-domain-1234' added successfully  
+```
+
+**Set Default tenant**
+```bash
+$> tines tenant checkout cool-domain-1234
+
+[14:40:29] Now using 'cool-domain-1234' tenant
+```
+
+**Quick way**
+```bash
+$> tines tenant add --domain=cool-domain-1234 --api-key=qwertyuio-123 --checkout
+
+[14:40:29] Tenant 'cool-domain-1234' added successfully
            Now using 'cool-domain-1234' tenant
 ```
-**Output**
 
 
 ## ✍️ Creating a Workflow
