@@ -21,7 +21,7 @@ def delete() -> None:
 
 @app.command(help="Switch to other tenants")
 def checkout(
-    domain: Annotated[str, Argument(..., help="Tenant ID")]
+    domain: Annotated[str, Option(..., help="Tenant ID")]
 ) -> None:
     TenantManager.checkout_tenant(domain)
 
