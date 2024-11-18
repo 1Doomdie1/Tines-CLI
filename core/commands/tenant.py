@@ -28,7 +28,7 @@ def checkout(
 @app.command(help="Show tenant details")
 def info() -> None:
 
-    tenant_data = TenantManager.enpoint_call("GET", "api/v1/info")["data"]["stack"]
+    tenant_data = TenantManager.endpoint_call("GET", "api/v1/info")["data"]["stack"]
     
     TABLE = Table()
     TABLE.add_column("Name",       justify="center")
