@@ -60,7 +60,7 @@ def info(
 
     if include_members:
             print("\n")
-            list_members(format_as)
+            list_members(format_as, ctx)
 
 @app.command(help="List teams", name="list")
 def _list(
