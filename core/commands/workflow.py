@@ -2,29 +2,28 @@ from core.utils.types               import *
 from json                           import dump
 from pathlib                        import Path
 from rich.table                     import Table
-from rich.console                   import Console
+from os                             import scandir
 from typing_extensions              import Annotated
 from os.path                        import abspath, join
 from core.managers.workflow_manager import WorkflowManager
-from os                             import makedirs, scandir
 from typer                          import Typer, Argument, Option, Context, Exit
 
 
-EXPORTS_PATH = abspath("exports")
-CONSOLE = Console(log_path=False)
-
 app = Typer()
+
+EXPORTS_PATH = abspath("exports")
 
 @app.callback()
 def manage_workflow_flags(
     ctx: Context,
     wid: int = Option(None, help="Workflow ID"),
 ) -> None:
-    ctx.obj = {"wid": wid}
+    console = ctx.obj.get("console")
+    ctx.obj["wid"] = wid
 
     if ctx.invoked_subcommand in {"info", "update", "delete", "export"} and wid is None:
-        CONSOLE.log("Error: --wid is required for this command.")
-        CONSOLE.log("Usage: tines workflow --wid=<ID> (update | info | delete | export)")
+        console.log("Error: --wid is required for this command.")
+        console.log("Usage: tines workflow --wid=<ID> (update | info | delete | export)")
         raise Exit(1)
 
 
@@ -50,13 +49,15 @@ def _list(
     tags:      Annotated[str | None,                         Option(..., help="A comma separated list of tag names to filter by"                 )] = None,
     filter:    Annotated[List_Workflows_Filter_Types | None, Option(..., help="Filter by one of"                                                 )] = None,
     order:     Annotated[List_Workflows_Order_Types  | None, Option(..., help="Order the results by one of"                                      )] = None,
-    format_as: Annotated[Output_Format_Types,                Option(..., help="Output format"                                                    )] = Output_Format_Types.TABLE
+    format_as: Annotated[Output_Format_Types,                Option(..., help="Output format"                                                    )] = Output_Format_Types.TABLE,
+    ctx:       Context                                                                                                                              = Context
 ) -> None:
-    STORIES = WorkflowManager.list_workflows(team_id, folder_id, per_page, page, tags, filter, order)
+    console = ctx.obj.get("console")
+    stories = WorkflowManager.list_workflows(team_id, folder_id, per_page, page, tags, filter, order)
 
     if format_as == Output_Format_Types.TABLE:
-        TABLE   = Table()
-        COLUMNS = (
+        table   = Table()
+        columns = (
             "ID", "Name", 
             "Team ID", "GUID", 
             "Mode", "Folder ID", 
@@ -64,20 +65,20 @@ def _list(
             "Priority", "STS"
         )
 
-        for column in COLUMNS:
-            TABLE.add_column(column, justify="center")
+        for column in columns:
+            table.add_column(column, justify="center")
 
-        for story in STORIES:
-            TABLE.add_row(
+        for story in stories:
+            table.add_row(
                 f"{story['id']}", story["name"], f'{story["team_id"]}', 
                 story["guid"], story["mode"], f'{story["folder_id"]}',
                 f'{story["tags"]}', f'{story["disabled"]}', f'{story["priority"]}',
                 f'{story["send_to_story_enabled"]}'
             )
 
-        CONSOLE.print(TABLE)
+        console.print(table)
     elif format_as == Output_Format_Types.JSON:
-        CONSOLE.log(STORIES)
+        console.log(stories)
 
 @app.command(help="Update a story. If change control is enabled on the story the request will be performed on the test story")
 def update(
@@ -102,8 +103,8 @@ def update(
     verbose:                Annotated[bool,                           Option  (..., help="Verbose"                                               )] = False,
     ctx:                    Context                                                                                                                 = Context
 ) -> None:
-
-    UPDATED_VALUES = WorkflowManager.update(
+    console = ctx.obj.get("console")
+    updated_values = WorkflowManager.update(
         ctx.obj.get("wid") , name, description, add_tag_names,
         remove_tag_names, keep_events_for, disabled, locked,
         priority, sts_access_source, sts_access, shared_team_slugs,
@@ -113,15 +114,15 @@ def update(
 
     if verbose:
         if format_as == Output_Format_Types.TABLE:
-            TABLE = Table()
-            TABLE.add_column("Attribute", justify="center")
-            TABLE.add_column("Value",     justify="center")
+            table = Table()
+            table.add_column("Attribute", justify="center")
+            table.add_column("Value",     justify="center")
 
-            for attribute, value in UPDATED_VALUES.items():
-                TABLE.add_row(attribute.capitalize(), f"{value}")
-            CONSOLE.log(TABLE)
+            for attribute, value in updated_values.items():
+                table.add_row(attribute.capitalize(), f"{value}")
+            console.log(table)
         elif format_as == Output_Format_Types.JSON:
-            CONSOLE.log(UPDATED_VALUES)
+            console.log(updated_values)
 
 @app.command(help="Get workflow details")
 def info(
@@ -129,18 +130,19 @@ def info(
     format_as: Annotated[Output_Format_Types,         Option  (..., help="Output format"                                   )] = Output_Format_Types.TABLE,
     ctx:       Context                                                                                                        = Context
 ) -> None:
-    WORKFLOW_DATA = WorkflowManager.get(ctx.obj.get("wid"), mode)
+    console = ctx.obj.get("console")
+    workflow_data = WorkflowManager.get(ctx.obj.get("wid"), mode)
 
     if format_as == Output_Format_Types.JSON:
-        CONSOLE.log(WORKFLOW_DATA)
+        console.print(workflow_data)
     elif format_as == Output_Format_Types.TABLE:
-        TABLE = Table()
-        TABLE.add_column("Attribute", justify="center")
-        TABLE.add_column("Value",     justify="center")
+        table = Table()
+        table.add_column("Attribute", justify="center")
+        table.add_column("Value",     justify="center")
 
-        for attribute, value in WORKFLOW_DATA.items():
-            TABLE.add_row(attribute, f"{value}")
-        CONSOLE.print(TABLE)
+        for attribute, value in workflow_data.items():
+            table.add_row(attribute, f"{value}")
+        console.print(table)
 
 @app.command(help="Delete workflow")
 def delete(
@@ -160,18 +162,17 @@ def export(
     randomize_urls: Annotated[bool, Option  (..., help="Randomize webhooks and pages urls")] = False,
     ctx:            Context                                                                  = Context
 ) -> None:
-    makedirs(EXPORTS_PATH, exist_ok=True)
+    console = ctx.obj.get("console")
+    export_data = WorkflowManager.export(ctx.obj.get("wid"), randomize_urls)
 
-    EXPORT_DATA = WorkflowManager.export(ctx.obj.get("wid"), randomize_urls)
-
-    name = EXPORT_DATA["name"].replace(" ", "_")
+    name = export_data["name"].replace(" ", "_")
     output_path = abspath(join(output, f"{name}.json"))
 
     with open(output_path, "w") as file:
-        dump(EXPORT_DATA, file, indent=4)
+        dump(export_data, file, indent=4)
 
-    CONSOLE.log("Workflow succesfully exported")
-    CONSOLE.log(f"PATH: \'{output_path}\'")
+    console.log("Workflow succesfully exported")
+    console.log(f"PATH: \'{output_path}\'")
 
 @app.command(name="import", help="Import local workflow to remote tenant")
 def _import(
@@ -184,17 +185,18 @@ def _import(
     WorkflowManager._import(abspath(file), new_name, team_id, folder_id, mode)
 
 @app.command(help="List all exported workflows")
-def exports() -> None:
-    makedirs(EXPORTS_PATH, exist_ok=True)
+def exports(
+    ctx: Context = Context
+) -> None:
+    console = ctx.obj.get["console"]
+    exports = [tenant.name for tenant in scandir(EXPORTS_PATH) if tenant.is_file()]
 
-    EXPORTS = [tenant.name for tenant in scandir(EXPORTS_PATH) if tenant.is_file()]
+    if exports:
+        table = Table()
+        table.add_column("Name", justify="center")
 
-    if EXPORTS:
-        TABLE = Table()
-        TABLE.add_column("Name", justify="center")
-
-        for entry in EXPORTS:
-            TABLE.add_row(entry)
-        CONSOLE.print(TABLE)
+        for entry in exports:
+            table.add_row(entry)
+        console.print(table)
     else:
-        CONSOLE.log("No exports found")
+        console.log("No exports found")

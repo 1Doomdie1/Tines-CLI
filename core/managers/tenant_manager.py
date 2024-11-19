@@ -1,7 +1,7 @@
 from typing       import Union
+from os           import remove
 from os           import scandir
 from rich.console import Console
-from os           import makedirs, remove
 from json         import dump, load, loads
 from os.path      import join, exists, abspath
 from dotenv       import set_key, dotenv_values
@@ -10,14 +10,6 @@ from requests     import get, post, put, delete, RequestException
 CONSOLE          = Console(log_path=False)
 DOTENV_FILE      = abspath(".env")
 TENANT_DIRECTORY = abspath("tenants")
-
-# Create tenant folder if it doesn't exist
-makedirs(TENANT_DIRECTORY, exist_ok=True)
-
-# Create .env file if it doesn't exist
-if not exists(DOTENV_FILE):
-    with open(DOTENV_FILE, "w"):
-        set_key(DOTENV_FILE, "USE_TENANT", "None")
 
 class TenantManager:
 

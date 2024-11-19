@@ -1,6 +1,5 @@
 from core.utils.types           import *
 from rich.table                 import Table
-from rich.console               import Console
 from typing_extensions          import Annotated
 from core.managers.team_manager import TeamsManager
 from core.commands.member       import list_members
@@ -11,18 +10,17 @@ from typer                      import Typer, Argument, Option, Context, Exit
 app = Typer()
 app.add_typer(member_app)
 
-CONSOLE = Console(log_path=False)
-
 @app.callback()
 def manage_team_flags(
     ctx: Context,
     tid: int = Option(None, help="Team ID"),
 ) -> None:
-    ctx.obj = {"tid": tid}
+    ctx.obj["tid"] = tid
+    console = ctx.obj.get("console")
 
     if ctx.invoked_subcommand in {"info", "update", "delete", "member"} and tid is None:
-        CONSOLE.log("Error: --tid is required for this command.")
-        CONSOLE.log("Usage: tines team --tid=<ID> (info | udpate | delete | member)")
+        console.log("Error: --tid is required for this command.")
+        console.log("Usage: tines team --tid=<ID> (info | udpate | delete | member)")
         raise Exit(1)
 
 
@@ -39,24 +37,26 @@ def info(
     ctx:             Context                                                                 = Context
 ) -> None:
     tid = ctx.obj.get("tid")
-    TEAM_INFO = TeamsManager.get(tid)
+    console = ctx.obj.get("console")
+
+    team_info = TeamsManager.get(tid)
     
     if format_as == Output_Format_Types.TABLE:
-        CONSOLE.print(f"[bold]Team ID:[/bold] {TEAM_INFO['id']}")
-        CONSOLE.print(f"[bold]Team Name:[/bold] {TEAM_INFO['name']}\n")
+        console.print(f"[bold]Team ID:[/bold] {team_info['id']}")
+        console.print(f"[bold]Team Name:[/bold] {team_info['name']}\n")
 
-        if TEAM_INFO['groups']:
-            TABLE = Table(title="Groups", title_justify="left")
-            TABLE.add_column("Group ID",   justify="center")
-            TABLE.add_column("Group Name", justify="center")
+        if team_info['groups']:
+            table = Table(title="Groups", title_justify="left")
+            table.add_column("Group ID",   justify="center")
+            table.add_column("Group Name", justify="center")
 
-            for group in TEAM_INFO['groups']:
-                TABLE.add_row(str(group['id']), group['name'])
-            CONSOLE.print(TABLE)
+            for group in team_info['groups']:
+                table.add_row(str(group['id']), group['name'])
+            console.print(table)
         else:
-            CONSOLE.log("No groups")
+            console.log("No groups")
     elif format_as == Output_Format_Types.JSON:
-        CONSOLE.print(TEAM_INFO)
+        console.print(team_info)
 
     if include_members:
             print("\n")
@@ -65,20 +65,22 @@ def info(
 @app.command(help="List teams", name="list")
 def _list(
     include_drafts: Annotated[bool,                Option(..., help="Include draft teams in the response")] = False,
-    format_as:      Annotated[Output_Format_Types, Option(..., help="Output format"                      )] = Output_Format_Types.TABLE
+    format_as:      Annotated[Output_Format_Types, Option(..., help="Output format"                      )] = Output_Format_Types.TABLE,
+    ctx:            Context                                                                                 = Context
 ) -> None:
-    TEAMS = TeamsManager.list(include_drafts)
+    console = ctx.obj.get("console")
+    teams = TeamsManager.list(include_drafts)
 
     if format_as == Output_Format_Types.TABLE:
-        TABLE = Table(title="Teams", title_justify="left")
-        TABLE.add_column("ID",   justify="center")
-        TABLE.add_column("Name", justify="center")
+        table = Table(title="Teams", title_justify="left")
+        table.add_column("ID",   justify="center")
+        table.add_column("Name", justify="center")
 
-        for team in TEAMS:
-            TABLE.add_row(f'{team["id"]}', team["name"])
-        CONSOLE.print(TABLE)
+        for team in teams:
+            table.add_row(f'{team["id"]}', team["name"])
+        console.print(table)
     elif format_as == Output_Format_Types.JSON:
-        CONSOLE.print(TEAMS)
+        console.print(teams)
 
 @app.command(help="Update team")
 def update(

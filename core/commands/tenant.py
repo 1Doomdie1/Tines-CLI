@@ -1,8 +1,8 @@
 from rich.table                   import Table
-from rich                         import print
 from typing_extensions            import Annotated
 from core.managers.tenant_manager import TenantManager
-from typer                        import Typer, Argument, Option
+from typer                        import Typer, Option, Context
+
 
 app = Typer()
 
@@ -26,23 +26,28 @@ def checkout(
     TenantManager.checkout_tenant(domain)
 
 @app.command(help="Show tenant details")
-def info() -> None:
+def info(
+    ctx: Context = Context
+) -> None:
+    console = ctx.obj.get("console")
 
     tenant_data = TenantManager.endpoint_call("GET", "api/v1/info")["data"]["stack"]
     
-    TABLE = Table()
-    TABLE.add_column("Name",       justify="center")
-    TABLE.add_column("Type",       justify="center")
-    TABLE.add_column("Region",     justify="center")
-    TABLE.add_column("Egress IPs", justify="center")
+    table = Table()
+    table.add_column("Name",       justify="center")
+    table.add_column("Type",       justify="center")
+    table.add_column("Region",     justify="center")
+    table.add_column("Egress IPs", justify="center")
 
-    TABLE.add_row(tenant_data["name"], tenant_data["type"], tenant_data["region"], "\n".join(tenant_data["egress_ips"]))
+    table.add_row(tenant_data["name"], tenant_data["type"], tenant_data["region"], "\n".join(tenant_data["egress_ips"]))
     
-    print(TABLE)
+    console.log(table)
 
 @app.command(name="list", help="List all local available tenants")
-def _list() -> None:
-    
+def _list(
+    ctx: Context = Context
+) -> None:
+    console = ctx.obj.get("console")
     TENANTS = TenantManager.list_local_tenants()
     
     TABLE = Table()
@@ -51,4 +56,4 @@ def _list() -> None:
     for tenant in TENANTS:
         TABLE.add_row(tenant.replace(".json", ""))
     
-    print(TABLE)
+    console.print(TABLE)
