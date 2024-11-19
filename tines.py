@@ -14,7 +14,7 @@ app.add_typer(tenant_app,   name="tenant",   help="Manage tenants")
 app.add_typer(team_app,     name="team",     help="Manage teams")
 
 @app.callback()
-def check_creds(
+def initializer(
     ctx: Context = Context
 ) -> None:
     # Set Global Context
