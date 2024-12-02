@@ -14,6 +14,14 @@ import (
 
 func CallEndpoint(method string, endpoint string, headers map[string]string, body map[string]interface{}) ([]byte, int, error) {
 	dtnv, _ := godotenv.Read(".env")
+
+	if dtnv["USE_TENANT"] == "None" {
+		fmt.Println("fatal: No tenant set.")
+		fmt.Println("Recomanded commands")
+		fmt.Println("   -> tines tenant checkout -d <DOMAIN> | checkout tenant")
+		os.Exit(1)
+	}
+
 	content, err := os.ReadFile(fmt.Sprintf("tenants/%s.json", dtnv["USE_TENANT"]))
 
 	if err != nil {

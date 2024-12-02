@@ -16,7 +16,7 @@ var WorkflowCmd = &cobra.Command{
 		if !pkg.IsTenantSet() {
 			fmt.Println("fatal: No tenant set.")
 			fmt.Println("Recomanded commands")
-			fmt.Println("   -> tines tenant checkout -d <DOMAIN>                      |   checkout tenant")
+			fmt.Println("   -> tines tenant checkout -d <DOMAIN> | checkout tenant")
 			os.Exit(1)
 		}
 		cmd.Help()
