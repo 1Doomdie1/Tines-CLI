@@ -16,7 +16,7 @@ var rootCmd = &cobra.Command{
 	Short: "TInes multi tenant management tool",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("v0.1.0")
+		fmt.Println("v4.2.0")
 	},
 }
 
