@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/1Doomdie1/Tines-CLI/pkg"
 	"github.com/aquasecurity/table"
@@ -19,7 +20,7 @@ var MemberListCmd = &cobra.Command{
 		teamId, _ := cmd.Flags().GetInt("team-id")
 		format, _ := cmd.Flags().GetString("format")
 
-		teamMembers, err := pkg.GetTeamMembers(teamId)
+		members, err := pkg.GetTeamMembers(teamId)
 
 		if err != nil {
 			fmt.Printf("fatal: %v", err)
@@ -33,7 +34,7 @@ var MemberListCmd = &cobra.Command{
 				"########################################",
 			)
 
-			for _, member := range teamMembers.Members {
+			for _, member := range members {
 				msg := fmt.Sprintf(
 					"- ID              : %v\n"+
 						"- First Name      : %s\n"+
@@ -58,7 +59,7 @@ var MemberListCmd = &cobra.Command{
 				fmt.Println(msg)
 			}
 		} else if format == "json" {
-			d, _ := json.MarshalIndent(teamMembers.Members, "", "  ")
+			d, _ := json.MarshalIndent(members, "", "  ")
 			fmt.Println(string(d))
 		} else if format == "table" {
 			t := table.New(os.Stdout)
@@ -66,16 +67,16 @@ var MemberListCmd = &cobra.Command{
 			t.SetHeaderStyle(table.StyleBold)
 			t.SetDividers(table.UnicodeRoundedDividers)
 
-			for _, member := range teamMembers.Members {
+			for _, member := range members {
 				t.AddRow(
-					fmt.Sprintf("%v", member.ID),
+					strconv.Itoa(member.ID),
 					member.FirstName,
 					member.LastName,
 					member.Email,
-					fmt.Sprintf("%v", member.IsAdmin),
+					strconv.FormatBool(member.IsAdmin),
 					member.CreatedAt,
 					member.LastSeen,
-					fmt.Sprintf("%v", member.InvitationAccepted),
+					strconv.FormatBool(member.InvitationAccepted),
 					member.Role,
 				)
 			}

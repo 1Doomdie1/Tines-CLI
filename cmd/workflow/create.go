@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/1Doomdie1/Tines-CLI/pkg"
+	"github.com/1Doomdie1/Tines-CLI/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -38,7 +39,7 @@ var WorkflowCreateCmd = &cobra.Command{
 		priority, _ := cmd.Flags().GetBool("priority")
 
 		if validEventRetention[retention] == 0 {
-			fmt.Printf("fatal: retention can have these values: %s", strings.Join(getMapKeys(validEventRetention), ", "))
+			fmt.Printf("fatal: retention can have these values: %s", strings.Join(utils.MapKeys(validEventRetention), ", "))
 		}
 
 		if err := pkg.CreateWorkflow(teamId, name, description, validEventRetention[retention], folderId, tags, disable, priority); err != nil {
@@ -51,7 +52,7 @@ var WorkflowCreateCmd = &cobra.Command{
 }
 
 func init() {
-	retentionChoices := strings.Join(getMapKeys(validEventRetention), "\n\t\t       ")
+	retentionChoices := strings.Join(utils.MapKeys(validEventRetention), "\n\t\t       ")
 
 	WorkflowCreateCmd.Flags().IntP("team-id", "t", 0, "Team ID")
 	WorkflowCreateCmd.Flags().StringP("name", "n", "", "Name")
@@ -65,12 +66,4 @@ func init() {
 	if err := WorkflowCreateCmd.MarkFlagRequired("team-id"); err != nil {
 		fmt.Println(err)
 	}
-}
-
-func getMapKeys(m map[string]int) []string {
-	keys := make([]string, 0, len(m))
-	for k := range m {
-		keys = append(keys, k)
-	}
-	return keys
 }

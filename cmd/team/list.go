@@ -33,7 +33,7 @@ var TeamListCmd = &cobra.Command{
 			t.SetHeaderStyle(table.StyleBold)
 			t.SetDividers(table.UnicodeRoundedDividers)
 
-			for _, team := range teams.Teams {
+			for _, team := range teams {
 				var groupDetails string
 				if len(team.Groups) > 0 {
 					for _, group := range team.Groups {

@@ -8,46 +8,47 @@ import (
 	"github.com/1Doomdie1/Tines-CLI/pkg/httpClient"
 )
 
+type Group struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+}
+
 type Team struct {
-	Teams []struct {
-		ID     int
-		Name   string
-		Groups []struct {
-			ID   int
-			Name string
-		} `json:"groups"`
-	} `json:"teams"`
+	ID     int     `json:"id"`
+	Name   string  `json:"name"`
+	Groups []Group `json:"groups"`
 }
 
-type TeamMembers struct {
-	Members []struct {
-		ID                 int    `json:"id"`
-		FirstName          string `json:"first_name"`
-		LastName           string `json:"last_name"`
-		Email              string `json:"email"`
-		IsAdmin            bool   `json:"is_admin"`
-		CreatedAt          string `json:"created_at"`
-		LastSeen           string `json:"last_seen"`
-		InvitationAccepted bool   `json:"invitation_accepted"`
-		Role               string `json:"role"`
-	} `json:"members"`
+type Member struct {
+	ID                 int    `json:"id"`
+	FirstName          string `json:"first_name"`
+	LastName           string `json:"last_name"`
+	Email              string `json:"email"`
+	IsAdmin            bool   `json:"is_admin"`
+	CreatedAt          string `json:"created_at"`
+	LastSeen           string `json:"last_seen"`
+	InvitationAccepted bool   `json:"invitation_accepted"`
+	Role               string `json:"role"`
 }
 
-func TeamList() (Team, error) {
+func TeamList() ([]Team, error) {
 	resp, _, err := httpClient.CallEndpoint("GET", "/teams", nil, nil)
 
 	if err != nil {
-		return Team{}, err
+		return nil, err
 	}
 
-	var team Team
-	err = json.Unmarshal(resp, &team)
+	var responseData struct {
+		Teams []Team `json:"teams"`
+	}
+
+	err = json.Unmarshal(resp, &responseData)
 
 	if err != nil {
-		return Team{}, err
+		return nil, err
 	}
 
-	return team, nil
+	return responseData.Teams, nil
 }
 
 func TeamCreate(name string) error {
@@ -86,7 +87,7 @@ func UpdateTeam(name string, teamId int) error {
 	return nil
 }
 
-func GetTeamMembers(teamId int) (TeamMembers, error) {
+func GetTeamMembers(teamId int) ([]Member, error) {
 	data := map[string]interface{}{
 		"per_page": 500,
 	}
@@ -94,21 +95,23 @@ func GetTeamMembers(teamId int) (TeamMembers, error) {
 	resp, statusCode, err := httpClient.CallEndpoint("GET", fmt.Sprintf("/teams/%v/members", teamId), nil, data)
 
 	if err != nil {
-		return TeamMembers{}, err
+		return nil, err
 	}
 
 	if statusCode != http.StatusOK {
-		return TeamMembers{}, fmt.Errorf("%s", string(resp))
+		return nil, fmt.Errorf("%s", string(resp))
 	}
 
-	var teamMembers TeamMembers
-	err = json.Unmarshal(resp, &teamMembers)
+	var responseData struct {
+		Members []Member `json:"members"`
+	}
+	err = json.Unmarshal(resp, &responseData)
 
 	if err != nil {
-		return TeamMembers{}, err
+		return nil, err
 	}
 
-	return teamMembers, nil
+	return responseData.Members, nil
 }
 
 func RemoveTeamMember(teamId int, userId int) error {
