@@ -1,34 +1,38 @@
 package workflow
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/1Doomdie1/Tines-CLI/pkg"
+	"github.com/1Doomdie1/Tines-CLI/utils"
+	"github.com/aquasecurity/table"
 	"github.com/spf13/cobra"
 )
 
 var filterChoices = []string{
-	"ALL_STORIES",
-	"SEND_TO_STORY_ENABLED",
-	"WORKBENCH_ENABLED",
-	"HIGH_PRIORITY",
-	"API_ENABLED",
-	"PUBLISHED",
-	"FAVORITE",
-	"CHANGE_CONTROL_ENABLED",
-	"DISABLED",
 	"LOCKED",
+	"FAVORITE",
+	"DISABLED",
+	"PUBLISHED",
+	"API_ENABLED",
+	"ALL_STORIES",
+	"HIGH_PRIORITY",
+	"WORKBENCH_ENABLED",
+	"SEND_TO_STORY_ENABLED",
+	"CHANGE_CONTROL_ENABLED",
 }
 
 var orderChoices = []string{
 	"NAME",
 	"NAME_DESC",
 	"RECENTLY_EDITED",
-	"LEAST_RECENTLY_EDITED",
 	"ACTION_COUNT_ASC",
 	"ACTION_COUNT_DESC",
+	"LEAST_RECENTLY_EDITED",
 }
 
 var WorkflowListCmd = &cobra.Command{
@@ -43,13 +47,18 @@ var WorkflowListCmd = &cobra.Command{
 		order, _ := cmd.Flags().GetString("order")
 		format, _ := cmd.Flags().GetString("format")
 
-		if !isValidChoice(filter, filterChoices) {
+		if !utils.IsStringInArray(filter, filterChoices) {
 			fmt.Printf("fatal: invalid filter value '%s'. Valid options are: %s\n", filter, strings.Join(filterChoices, ", "))
 			os.Exit(1)
 		}
 
-		if !isValidChoice(order, orderChoices) {
+		if !utils.IsStringInArray(order, orderChoices) {
 			fmt.Printf("fatal: invalid order value '%s'. Valid options are: %s\n", order, strings.Join(orderChoices, ", "))
+			os.Exit(1)
+		}
+
+		if format != "text" && format != "json" && format != "table" {
+			fmt.Printf("fatal: invalid format value '%s'. Valid options are: text, json & table\n", format)
 			os.Exit(1)
 		}
 
@@ -95,7 +104,39 @@ var WorkflowListCmd = &cobra.Command{
 				)
 				fmt.Println(msg)
 			}
+		} else if format == "table" {
+			t := table.New(os.Stdout)
+			t.SetHeaders("ID", "Name", "Team ID", "Folder ID", "Disabled", "Priority", "Published", "Edited At", "Created At", "Updated At", "GUID")
+			t.SetHeaderStyle(table.StyleBold)
+			t.SetDividers(table.UnicodeRoundedDividers)
 
+			for _, workflow := range workflows {
+				t.AddRow(
+					strconv.Itoa(workflow.ID),
+					workflow.Name,
+					strconv.Itoa(workflow.TeamID),
+					strconv.Itoa(workflow.FolderID),
+					strconv.FormatBool(workflow.Disabled),
+					strconv.FormatBool(workflow.Priority),
+					strconv.FormatBool(workflow.Published),
+					workflow.EditedAt,
+					workflow.CreatedAt,
+					workflow.UpdatedAt,
+					workflow.GUID,
+				)
+			}
+
+			t.Render()
+
+		} else if format == "json" {
+			jsonData, err := json.MarshalIndent(workflows, "", "  ")
+
+			if err != nil {
+				fmt.Println("fatal:", err)
+				os.Exit(1)
+			}
+
+			fmt.Println(string(jsonData))
 		}
 	},
 }
@@ -107,13 +148,4 @@ func init() {
 	WorkflowListCmd.Flags().StringP("filter", "i", "ALL_STORIES", fmt.Sprintf("Filters: %s", strings.Join(filterChoices, "\n\t ")))
 	WorkflowListCmd.Flags().StringP("order", "o", "NAME", fmt.Sprintf("Order: %s", strings.Join(orderChoices, "\n       ")))
 	WorkflowListCmd.Flags().StringP("format", "r", "text", "Format output as text, json or table")
-}
-
-func isValidChoice(value string, choices []string) bool {
-	for _, choice := range choices {
-		if value == choice {
-			return true
-		}
-	}
-	return false
 }
