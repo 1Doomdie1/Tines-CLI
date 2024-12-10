@@ -13,10 +13,17 @@ import (
 
 var rootCmd = &cobra.Command{
 	Use:   "tines",
-	Short: "TInes multi tenant management tool",
+	Short: "Tines multi-tenant management tool",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("v4.2.0")
+		version, _ := cmd.Flags().GetBool("version")
+		if version {
+			fmt.Println("v4.3.0")
+			os.Exit(0)
+		}
+		if len(args) == 0 {
+			cmd.Help()
+		}
 	},
 }
 
@@ -32,7 +39,8 @@ func init() {
 	rootCmd.AddCommand(tenant.TenantCmd)
 	rootCmd.AddCommand(workflow.WorkflowCmd)
 
-	// Disable default help cmd and completion
 	rootCmd.SetHelpCommand(&cobra.Command{Hidden: true})
 	rootCmd.CompletionOptions.DisableDefaultCmd = true
+
+	rootCmd.Flags().BoolP("version", "v", false, "Show CLI version")
 }
