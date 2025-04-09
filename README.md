@@ -27,7 +27,7 @@ $> tines tenant checkout --domain=my-tines-domain
 
 ### Tenant Info
 ```commandline
-$> tines tenant info --output-as=table
+$> tines tenant info
 
 +------+--------+-----------+-----------------------------+
 | Name |  Type  |   Region  |          Egress IPs         |
@@ -38,15 +38,6 @@ $> tines tenant info --output-as=table
 
 ### Find out more.
 At any point you can use the `--help` flag and get information on what commands/args/options you have access to, so don't hesitate to use it.
-
-### Current capabilities
-For now the project can perform basic tenant level commands. Here is a list of the available commands
-
-- tines tenant add
-- tines tenant info
-- tines tenant list
-- tines tenant delete
-- tines tenant checkout
 
 ## Upcoming Updates
 
