@@ -15,8 +15,8 @@ typer.add_typer(envvars_typer)
 def version():
     print(__version__)
 
-@typer.callback()
-def callback(invoke_without_command = True):
+@typer.callback(invoke_without_command = True)
+def callback():
     load_dotenv()
 
     DISABLE_SSL = getenv("DISABLE_SSL")
