@@ -8,7 +8,7 @@ with open("README.md", "r", encoding="utf-8") as f:
 
 setup(
     name                          = "tines-cli",
-    version                       = "0.0.1",
+    version                       = "0.1.1",
     description                   = "CLI tool to manage Tines tenants",
     long_description              = long_description,
     long_description_content_type = "text/markdown",
