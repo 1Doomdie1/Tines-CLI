@@ -8,7 +8,7 @@ typer = Typer(add_completion = False)
 typer.add_typer(tenant_typer)
 typer.add_typer(envvars_typer)
 
-@typer.command()
+@typer.command(help = "Tool version")
 def version():
     print(__version__)
 
