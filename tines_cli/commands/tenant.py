@@ -63,7 +63,7 @@ def add(
 
 @tenant_typer.command(help = "Pull tenant information")
 def info(
-        output_as:   Annotated[str,  Option(..., click_type = Choice(["json", "table"]))] = "json",
+        output_as:   Annotated[str,  Option(..., click_type = Choice(["json", "table"]))] = "table",
         disable_ssl: Annotated[bool, Option(..., help = "Disable SSL verification")] = False
 ):
     if disable_ssl:
@@ -107,7 +107,7 @@ def info(
 
 @tenant_typer.command(name = "list", help = "List all the tenants saved locally")
 def _list(
-        output_as: Annotated[str, Option(..., click_type=Choice(["json", "table"]))] = "json"
+        output_as: Annotated[str, Option(..., click_type=Choice(["json", "table"]))] = "table"
 ):
     if not exists(tenants_json_file):
         print("[-] No tenants have been added. Please use 'tines tenant add <DOMAIN> <API_KEY>' command")
