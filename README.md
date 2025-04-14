@@ -13,29 +13,40 @@ $> pip install git+https://github.com/1Doomdie1/Tines-CLI
 
 ### Add tenant
 ```commandline
-$> tines tenant add domain=my-tines-domain api_key=me_secret_key
+$> tines tenant add my-tines-domain me_secret_key
 
 [+] Tenant my-tines-domain has been added successfully
 ``` 
 
 ### Checkout tenant
 ```commandline
-$> tines tenant checkout --domain=my-tines-domain
+$> tines tenant checkout my-tines-domain
 
-[+] Now using the 'my-tines-domain' tenant
+[+] Successfully checked out tenant 'my-tines-domain'
 ```
 
 ### Tenant Info
 ```commandline
 $> tines tenant info
 
-+------+--------+-----------+-----------------------------+
-| Name |  Type  |   Region  |          Egress IPs         |
-+------+--------+-----------+-----------------------------+
-| us1  | shared | us-west-2 |  10.10.10.10, 10.10.10.11   |
-+------+--------+-----------+-----------------------------+
++-----------------+---------+--------+-----------+-----------------------------+
+|      Domain     | SV Name |  Type  |   Region  |          Egress IPs         |
++-----------------+---------+--------+-----------+-----------------------------+
+| my-tines-domain |   us1   | shared | us-west-2 |  10.10.10.10, 10.10.10.11   |
++-----------------+---------+--------+-----------+-----------------------------+
 ```
 
+### List all tenant saved locally
+```commandline
+$> tines tenant list
+
++----+------------------+--------+
+| Nr |      Domain      | In use |
++----+------------------+--------+
+| 1  |  my-cool-domain  |   ✗    |
+| 2  |  my-tines-domain |   ✓    |
++----+------------------+--------+
+```
 ### Find out more.
 At any point you can use the `--help` flag and get information on what commands/args/options you have access to, so don't hesitate to use it.
 
