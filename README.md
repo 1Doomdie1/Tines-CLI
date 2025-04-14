@@ -60,8 +60,7 @@ At any point you can use the `--help` flag and get information on what commands/
 - [ ] tines tenant remove-member
 
 #### Workflows
-- [ ] tines workflow get
-- [ ] tines workflow list
+- [x] tines workflow list
 - [ ] tines workflow logs
 - [ ] tines workflow import
 - [ ] tines workflow export
