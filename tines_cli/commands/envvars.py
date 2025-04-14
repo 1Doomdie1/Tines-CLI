@@ -14,20 +14,17 @@ def set_(
     set_key(".env", key, value)
 
 @envvars_typer.command(name = "list", help = "List environment variables")
-def list_(
-        show_api_key: Annotated[bool, Option(..., help = "Show API key")] = False
-):
+def list_():
     for key, value in dotenv_values(".env").items():
-        print(f"{key}: {value}" if key != "API_KEY" else f"{key}: {"*" * len(value)}" if not show_api_key else f"{key}: {value}")
+        print(f"{key}: {value}")
 
 @envvars_typer.command(name = "export", help = "Export environment variables")
 def export(
-        export_path:   Annotated[str,  Option("--export-path",   "--ep", help = "Export path. Current working directory")] = join(getcwd(), "env_export.txt"),
-        include_creds: Annotated[bool, Option("--include-creds", "--ic", help = "Exclude DOMAIN and API_KEY")]             = False
+        export_path: Annotated[str,  Option("--export-path", "--ep", help = "Export path. Current working directory")] = join(getcwd(), "env_export.txt")
 ):
     vars_to_export = ""
     for key, value in dotenv_values(".env").items():
-        vars_to_export += f"{key}='{value}'\n" if include_creds or key not in ("DOMAIN", "API_KEY") else ""
+        vars_to_export += f"{key}='{value}'\n"
 
     if vars_to_export:
         try:
