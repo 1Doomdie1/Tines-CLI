@@ -44,8 +44,8 @@ def add(
         print("[-] Invalid domain and/or api key.")
         print("[!] Sometimes SSL verification can mess this process up. Make sure you disable it by using this command and try again:")
         print("    -> tines envars set disable_ssl 1")
-#
-@tenant_typer.command(name = "checkout", help = "Pull tenant information")
+
+@tenant_typer.command(name = "checkout", help = "Change to a particular tenant")
 def checkout_(
         ctx:    Context,
         domain: Annotated[str, Argument(..., help = "Tenant domain")]
