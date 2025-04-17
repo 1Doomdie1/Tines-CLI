@@ -21,7 +21,7 @@ def version():
     print(__version__)
 
 
-@typer.callback(invoke_without_command = True)
+@typer.callback()
 def callback(ctx: Context):
     # Load env vars and create an empty context object
     load_dotenv()
