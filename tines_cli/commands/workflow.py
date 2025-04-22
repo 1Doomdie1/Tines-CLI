@@ -5,7 +5,7 @@ from typer             import Option
 from typing_extensions import Annotated
 from prettytable       import PrettyTable
 from typer             import Typer, Context
-from tapi              import StoriesAPI, EventsAPI
+from tapi              import StoriesAPI, EventsAPI, RunsAPI
 
 
 workflow_typer = Typer(name = "workflow", help = "Manage workflows")
@@ -113,12 +113,14 @@ def events(
             table.align["Previous Events IDS"] = "l"
 
             for index, event in enumerate(w_events, 1):
+                prev_ev_ids = tuple(map(str, event.get("previous_events_ids")))
+                prev_ev_ids = "\n".join([", ".join(prev_ev_ids[index:index+4]) for index in range(0, len(prev_ev_ids), 4)])
                 table.add_row([
                     index,
                     event.get("id"),
                     event.get("agent_id"),
                     event.get("story_run_guid"),
-                    ", ".join([f"{i}" for i in event.get("previous_events_ids")]),
+                    prev_ev_ids,
                     event.get("created_at"),
                     event.get("updated_at")
                 ])
@@ -161,6 +163,51 @@ def event(
 
         print(f"└{"─" * box_width}┘")
 
+@workflow_typer.command(help = "Get a lsit of runs for a workflow")
+def runs(
+    story_mode: Annotated[str, Option(..., click_type = Choice(["LIVE", "TEST"]),       help = "Story mode"          )] = None,
+    draft_id:   Annotated[int, Option(..., help = "Return runs for a specific draft"                                 )] = None,
+    since:      Annotated[str, Option(..., help = "Only retrieve story runs that started after this time"            )] = None,
+    until:      Annotated[str, Option(..., help = "Only retrieve story runs that started until this time"            )] = None,
+    output_as:  Annotated[str, Option(..., click_type  = Choice(OPTIONS["OUTPUT_FORMAT"]),  help = "Format results"  )] = "table",
+    per_page:   Annotated[int, Option(..., help = "Set the number of results returned per page"                      )] = 20,
+    page:       Annotated[int, Option(..., help = "Specify the page of results to return if there are multiple pages")] = 1,
+):
+    runs_api = RunsAPI(OPTIONS["DOMAIN"], OPTIONS["API_KEY"])
+    req = runs_api.list(story_id = OPTIONS["WORKFLOW_ID"], story_mode = story_mode, draft_id = draft_id, since = since, until = until, per_page = per_page, page = page)
+    status_code = req.get("status_code")
+    runs = req.get("body", {}).get("story_runs")
+
+    if status_code == 200:
+
+        if not runs:
+            print("[!] Story has not runs")
+            exit()
+
+        if output_as == "table":
+            table = PrettyTable()
+            table.field_names = [ "Nr", "GUID", "Story Mode", "Duration (s)", "Action Count", "Event Count", "Started At", "Ended At" ]
+
+            for index, run in enumerate(runs):
+                table.add_row([
+                    index,
+                    run.get("guid"),
+                    run.get("story_mode"),
+                    run.get("duration"),
+                    run.get("action_count"),
+                    run.get("event_count"),
+                    run.get("start_time"),
+                    run.get("end_time")
+                ])
+            print(table)
+        else:
+            print(dumps(runs, indent = 4))
+    else:
+        print(f"[!] Error encountered")
+        print(f"    -> Status code: {status_code}")
+        print(f"    -> Message: {req.get("body")}")
+
+
 @workflow_typer.callback()
 def callback(
         ctx: Context,
@@ -169,13 +216,13 @@ def callback(
     OPTIONS["DOMAIN"]  = ctx.obj.get("DOMAIN")
     OPTIONS["API_KEY"] = ctx.obj.get("API_KEY")
 
-    if ctx.invoked_subcommand in ("list", "event", "events") and not ctx.obj.get("DOMAIN") or not ctx.obj.get("API_KEY"):
+    if ctx.invoked_subcommand in ("list", "event", "events", "runs") and not ctx.obj.get("DOMAIN") or not ctx.obj.get("API_KEY"):
         print("[-] You first need to checkout a tenant before using this command.")
         exit()
 
-    if ctx.invoked_subcommand in ("event", "events") and not wid:
+    if ctx.invoked_subcommand in ("event", "events", "runs") and not wid:
         print("[-] Please provide the a workflow ID")
-        print(f"    -> tines workflow --id=<ID> {ctx.invoked_subcommand} (args) [flags] <switches>")
+        print(f"    -> tines workflow --wid=<ID> {ctx.invoked_subcommand} (args) [flags] <switches>")
         exit()
 
     OPTIONS["WORKFLOW_ID"] = wid
