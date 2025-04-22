@@ -162,6 +162,11 @@ def event(
                 print(f"│{" " * 17}", end="")
 
         print(f"└{"─" * box_width}┘")
+    else:
+        print(f"[!] Error encountered")
+        print(f"    -> Status code: {status_code}")
+        print(f"    -> Message: {req.get("body")}")
+
 
 @workflow_typer.command(help = "Get a lsit of runs for a workflow")
 def runs(
