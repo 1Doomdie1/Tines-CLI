@@ -56,11 +56,11 @@ def list_(
                         index,
                         story.get("id"),
                         story.get("name"),
-                        f"{story.get("description")[:20]}..." if story.get("description") else None,
+                        f"{story.get("description")[:20]}..." if story.get("description") else "[ N/A ]",
                         story.get("mode"),
                         story.get("folder_id"),
                         story.get("team_id"),
-                        "Disabled" if not story.get("disabled") else "Enabled",
+                        "Disabled" if story.get("disabled") else "Enabled",
                         story.get("created_at"),
                         story.get("updated_at"),
                         story.get("edited_at")
