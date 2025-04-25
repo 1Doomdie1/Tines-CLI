@@ -2,8 +2,8 @@ from os                 import getenv
 from json               import dump, load
 from dotenv             import load_dotenv
 from tines_cli          import __version__
+from .commands.utils    import utils_typer
 from .commands.tenant   import tenant_typer
-from .commands.envvars  import envvars_typer
 from .commands.workflow import workflow_typer
 from typer              import Typer, Context
 from tapi.utils.http    import disable_ssl_verification
@@ -11,8 +11,8 @@ from os.path            import join, dirname, abspath, exists
 
 
 typer = Typer(add_completion = False)
+typer.add_typer(utils_typer)
 typer.add_typer(tenant_typer)
-typer.add_typer(envvars_typer)
 typer.add_typer(workflow_typer)
 
 
