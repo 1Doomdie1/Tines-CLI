@@ -168,7 +168,7 @@ def event_(
         print(f"    -> Message: {req.get("body")}")
 
 
-@workflow_typer.command(name = "name", help = "Get a list of workflow runs")
+@workflow_typer.command(name = "runs", help = "Get a list of workflow runs")
 def runs_(
     story_mode: Annotated[str, Option(..., help = "Story mode", click_type = Choice(["LIVE", "TEST"])                )] = None,
     draft_id:   Annotated[int, Option(..., help = "Return runs for a specific draft"                                 )] = None,
