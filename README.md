@@ -8,12 +8,16 @@ This project's core module is [tapi](https://github.com/1Doomdie1/tapi), a simpl
 ```commandline
 $> pip install git+https://github.com/1Doomdie1/Tines-CLI
 ```
+## Update tines-cli
 
+```commandline
+$> tines utils update
+```
 ## Getting started
 
 ### Add tenant
 ```commandline
-$> tines tenant add my-tines-domain me_secret_key
+$> tines tenant add my-tines-domain my_secret_key
 
 [+] Tenant my-tines-domain has been added successfully
 ``` 
@@ -54,24 +58,37 @@ At any point you can use the `--help` flag and get information on what commands/
 
 ### Adding the following commands:
 
+#### Utils
+- [x] tines utils uninstall
+- [x] tines utils update
+- [x] tines utils versions
+- [x] tines utils envars
+
 #### Tenant
-- [ ] tines tenant logs
-- [ ] tines tenant invite
-- [ ] tines tenant remove-member
+
+- [x] tines tenant add \[DOMAIN\] \[API_KEY\]
+- [x] tines tenant checkout \[DOMAIN\]
+- [x] tines tenant info
+- [x] tines tenant list
+- [x] tines tenant delete \[DOMAIN\]
+- [ ] tines tenant invite \[EMAIL\]
+- [ ] tines tenant remove-member \[USER_ID\]
 
 #### Workflows
 - [x] tines workflow list
-- [ ] tines workflow logs
-- [ ] tines workflow import
-- [ ] tines workflow export
+- [x] tines workflow --wid=\[WORKFLOW_ID\] events
+- [x] tines workflow --wid=\[WORKFLOW_ID\] event
+- [x] tines workflow --wid=\[WORKFLOW_ID\] runs
+- [ ] tines workflow import \[PATH/TO/JSON\]
+- [ ] tines workflow export \[OUTPUT_FILE\]
 
 #### Teams
-- [ ] tines team add
+- [ ] tines team add [TEAM_NAME\]
 - [ ] tines team list
-- [ ] tines team delete
-- [ ] tines team invite
-- [ ] tines team remove
-- [ ] tines team set-name
+- [ ] tines team delete \[TEAM_ID\]
+- [ ] tines team --tid=\[TEAM_ID\] invite \[EMAIL\]
+- [ ] tines team --tid=\[TEAM_ID\] remove \[USER_ID\]
+- [ ] tines team --tid=\[TEAM_ID\] set-name \[NEW_NAME\]
 
 ### Improvements
 
