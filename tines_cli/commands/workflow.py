@@ -75,7 +75,7 @@ def list_(
         print(f"    -> Status code: {status_code}")
         print(f"    -> Message: {req.get("body")}")
 
-@workflow_typer.command(help = "Pull a list of events")
+@workflow_typer.command(help = "Pull a list of events from a workflow")
 def events(
         since_id:       Annotated[int,  Option(..., help = "Only retrieve events after this ID"                                                    )] = None,
         until_id:       Annotated[int,  Option(..., help = "Only retrieve events until (and including) this ID."                                   )] = None,
@@ -133,8 +133,8 @@ def events(
         print(f"    -> Status code: {status_code}")
         print(f"    -> Message: {req.get("body")}")
 
-@workflow_typer.command(help = "Get an event")
-def event(
+@workflow_typer.command(name = "event", help = "Get a workflow event")
+def event_(
         eid:  Annotated[int, Option(..., help = "Event ID")]
 ):
     events_api = EventsAPI(OPTIONS["DOMAIN"], OPTIONS["API_KEY"])
@@ -168,13 +168,13 @@ def event(
         print(f"    -> Message: {req.get("body")}")
 
 
-@workflow_typer.command(help = "Get a lsit of runs for a workflow")
-def runs(
-    story_mode: Annotated[str, Option(..., click_type = Choice(["LIVE", "TEST"]),       help = "Story mode"          )] = None,
+@workflow_typer.command(name = "name", help = "Get a list of workflow runs")
+def runs_(
+    story_mode: Annotated[str, Option(..., help = "Story mode", click_type = Choice(["LIVE", "TEST"])                )] = None,
     draft_id:   Annotated[int, Option(..., help = "Return runs for a specific draft"                                 )] = None,
     since:      Annotated[str, Option(..., help = "Only retrieve story runs that started after this time"            )] = None,
     until:      Annotated[str, Option(..., help = "Only retrieve story runs that started until this time"            )] = None,
-    output_as:  Annotated[str, Option(..., click_type  = Choice(OPTIONS["OUTPUT_FORMAT"]),  help = "Format results"  )] = "table",
+    output_as:  Annotated[str, Option(..., help = "Format results", click_type  = Choice(OPTIONS["OUTPUT_FORMAT"])   )] = "table",
     per_page:   Annotated[int, Option(..., help = "Set the number of results returned per page"                      )] = 20,
     page:       Annotated[int, Option(..., help = "Specify the page of results to return if there are multiple pages")] = 1,
 ):
