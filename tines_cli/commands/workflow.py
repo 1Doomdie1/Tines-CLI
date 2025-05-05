@@ -1,6 +1,7 @@
 from typing            import List
 from click             import Choice
 from typer             import Option
+from os.path           import join
 from typing_extensions import Annotated
 from prettytable       import PrettyTable
 from json              import dumps, dump
@@ -303,7 +304,6 @@ def disable():
 
     if status_code == 200:
         print("[+] Story successfully disabled")
-
     else:
         print(f"[!] Error encountered")
         print(f"    -> Status code: {status_code}")
@@ -318,7 +318,6 @@ def enable():
 
     if status_code == 200:
         print("[+] Story successfully enabled")
-
     else:
         print(f"[!] Error encountered")
         print(f"    -> Status code: {status_code}")
@@ -334,8 +333,7 @@ def export(
     req = story_api.export(OPTIONS["WORKFLOW_ID"], randomize_urls = randomize_urls, draft_id = draft_id)
     status_code = req.get("status_code")
     story = req.get("body")
-    path = path if path else f"{OPTIONS["EXPORTS_FOLDER"]}\\{story.get("slug")}.json"
-
+    path = path if path else join(OPTIONS["EXPORTS_FOLDER"], f"{story.get("slug")}.json")
 
     if status_code == 200:
         with open(path, "w") as file:
