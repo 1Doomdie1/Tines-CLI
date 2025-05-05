@@ -41,14 +41,14 @@ OPTIONS = {
 
 @workflow_typer.command(name = "list", help = "Get a list of workflows")
 def list_(
-        team_id:   Annotated[int,       Option(..., help = "Team ID"                                                        )] = None,
-        folder_id: Annotated[int,       Option(..., help = "Folder ID"                                                      )] = None,
-        per_page:  Annotated[int,       Option(..., help = "Number of results per request"                                  )] = None,
-        page:      Annotated[int,       Option(..., help = "Page number"                                                    )] = None,
-        tags:      Annotated[List[str], Option(..., help = "A comma separated list of tag names to filter by"               )] = None,
-        filter:    Annotated[str,       Option(..., click_type  = Choice(OPTIONS["FILTERS"]),        help = "Filter results")] = None,
-        order:     Annotated[str,       Option(..., click_type  = Choice(OPTIONS["ORDER"]),          help = "Order results" )] = None,
-        output_as: Annotated[str,       Option(..., click_type  = Choice(OPTIONS["OUTPUT_FORMAT"]),  help = "Format results")] = "table"
+        team_id:   Annotated[int,       Option(..., help = "Team ID"                                                      )] = None,
+        folder_id: Annotated[int,       Option(..., help = "Folder ID"                                                    )] = None,
+        per_page:  Annotated[int,       Option(..., help = "Number of results per request"                                )] = None,
+        page:      Annotated[int,       Option(..., help = "Page number"                                                  )] = None,
+        tags:      Annotated[List[str], Option(..., help = "A comma separated list of tag names to filter by"             )] = None,
+        filter:    Annotated[str,       Option(..., help = "Filter results", click_type = Choice(OPTIONS["FILTERS"])      )] = None,
+        order:     Annotated[str,       Option(..., help = "Order results",  click_type = Choice(OPTIONS["ORDER"])        )] = None,
+        output_as: Annotated[str,       Option(..., help = "Format results", click_type = Choice(OPTIONS["OUTPUT_FORMAT"]))] = "table"
 ):
     stories_api = StoriesAPI(OPTIONS["DOMAIN"], OPTIONS["API_KEY"])
     req = stories_api.list(team_id = team_id, folder_id = folder_id, per_page = per_page, page = page, tags = tags, filter = filter, order = order)
@@ -294,6 +294,35 @@ def actions_(
             )
         elif output_as == "json":
             print(dumps(actions, indent=4))
+
+@workflow_typer.command(help = "Disable story")
+def disable():
+    story_api = StoriesAPI(OPTIONS["DOMAIN"], OPTIONS["API_KEY"])
+    req = story_api.disable(id = OPTIONS["WORKFLOW_ID"], disabled = True)
+    status_code = req.get("status_code")
+
+    if status_code == 200:
+        print("[+] Story successfully disabled")
+
+    else:
+        print(f"[!] Error encountered")
+        print(f"    -> Status code: {status_code}")
+        print(f"    -> Message: {req.get("body")}")
+
+
+@workflow_typer.command(help = "Enable story")
+def enable():
+    story_api = StoriesAPI(OPTIONS["DOMAIN"], OPTIONS["API_KEY"])
+    req = story_api.disable(id = OPTIONS["WORKFLOW_ID"], disabled = False)
+    status_code = req.get("status_code")
+
+    if status_code == 200:
+        print("[+] Story successfully enabled")
+
+    else:
+        print(f"[!] Error encountered")
+        print(f"    -> Status code: {status_code}")
+        print(f"    -> Message: {req.get("body")}")
 
 @workflow_typer.callback()
 def callback(
