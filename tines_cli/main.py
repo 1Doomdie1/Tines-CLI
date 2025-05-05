@@ -1,4 +1,5 @@
 from os                 import getenv
+from os                 import makedirs
 from json               import dump, load
 from dotenv             import load_dotenv
 from tines_cli          import __version__
@@ -28,17 +29,22 @@ def callback(ctx: Context):
     ctx.obj = {}
 
     # Load context with data
-    ctx.obj["DISABLE_SSL"]  = getenv("DISABLE_SSL")
-    ctx.obj["TENANTS_FILE"] = join(dirname(abspath(__file__)), "tenants.json")
+    ctx.obj["DISABLE_SSL"]    = getenv("DISABLE_SSL")
+    ctx.obj["TENANTS_FILE"]   = join(dirname(abspath(__file__)), "tenants.json")
+    ctx.obj["EXPORTS_FOLDER"] = join(dirname(abspath(__file__)), "exports")
 
     # Disable SSL if needed
     if getenv("DISABLE_SSL") == "1":
         disable_ssl_verification()
 
-    # Check if TENANTS_FILE exists; If it doesn't create an empty one
+    # Check if TENANTS_FILE exists; If it doesn't create an empty file
     if not exists(ctx.obj["TENANTS_FILE"]):
         with open(ctx.obj["TENANTS_FILE"], "w") as file:
             dump([], file, indent=4)
+
+    # Check if EXPORTS_FOLDER exists; If it doesn't create an empty folder
+    if not exists(ctx.obj["EXPORTS_FOLDER"]):
+        makedirs(ctx.obj["EXPORTS_FOLDER"])
 
     # Set DOMAIN and API_KEY to context
     with open(ctx.obj["TENANTS_FILE"], "r") as file:
