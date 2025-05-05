@@ -83,6 +83,7 @@ At any point you can use the `--help` flag and get information on what commands/
 - [x] tines workflow --wid=\[WORKFLOW_ID\] disable
 - [x] tines workflow --wid=\[WORKFLOW_ID\] enable
 - [ ] tines workflow --wid=\[WORKFLOW_ID\] export
+- [x] tines workflow export
 - [ ] tines workflow import \[PATH/TO/JSON\]
 
 #### Teams
