@@ -226,7 +226,7 @@ def runs_(
 
 @workflow_typer.command(name = "actions", help = "Get a list of actions")
 def actions_(
-        story_mode:  Annotated[str,       Option(..., help = "Story mode", click_type = Choice(["LIVE", "TEST"])                           )] = None,
+        story_mode:  Annotated[str,       Option(..., help = "Story mode", click_type = Choice(["live", "test"])                           )] = None,
         team_id:     Annotated[int,       Option(..., help = "List actions for the given team"                                             )] = None,
         group_id:    Annotated[int,       Option(..., help = "List actions for the given group"                                            )] = None,
         entry_type:  Annotated[List[str], Option(..., help = "Sort by entry type", click_type= Choice(OPTIONS["ENTRY_TYPE"])               )] = None,
