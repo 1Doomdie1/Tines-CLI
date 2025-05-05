@@ -79,8 +79,11 @@ At any point you can use the `--help` flag and get information on what commands/
 - [x] tines workflow --wid=\[WORKFLOW_ID\] events
 - [x] tines workflow --wid=\[WORKFLOW_ID\] event
 - [x] tines workflow --wid=\[WORKFLOW_ID\] runs
+- [x] tines workflow --wid=\[WORKFLOW_ID\] actions
+- [x] tines workflow --wid=\[WORKFLOW_ID\] disable
+- [x] tines workflow --wid=\[WORKFLOW_ID\] enable
+- [ ] tines workflow --wid=\[WORKFLOW_ID\] export
 - [ ] tines workflow import \[PATH/TO/JSON\]
-- [ ] tines workflow export \[OUTPUT_FILE\]
 
 #### Teams
 - [ ] tines team add [TEAM_NAME\]
