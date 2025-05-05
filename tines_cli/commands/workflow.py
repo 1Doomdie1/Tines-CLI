@@ -5,7 +5,7 @@ from typer             import Option
 from typing_extensions import Annotated
 from prettytable       import PrettyTable
 from typer             import Typer, Context
-from tapi              import StoriesAPI, EventsAPI, RunsAPI
+from tapi              import StoriesAPI, EventsAPI, RunsAPI, ActionsAPI
 
 
 workflow_typer = Typer(name = "workflow", help = "Manage workflows")
@@ -26,17 +26,26 @@ OPTIONS = {
         "LEAST_RECENTLY_EDITED", "ACTION_COUNT_ASC",
         "ACTION_COUNT_DESC"
     ],
-    "WORKFLOW_ID": None
+    "WORKFLOW_ID": None,
+    "AGENT_TYPE": [
+        "Agents::EmailAgent", "Agents::EventTransformationAgent",
+        "Agents::HTTPRequestAgent", "Agents::IMAPAgent",
+        "Agents::TriggerAgent", "Agents::WebhookAgent",
+        "Agents::SendToStoryAgent", "Agents::GroupAgent",
+        "Agents::FormAgent", " Agents::HTTPRequestAgent",
+        "Agents::LLMAgent", "Agents::RunScriptAgent"
+    ],
+    "ENTRY_TYPE": [ "entry", "transit", "exit" ]
 }
 
 
 @workflow_typer.command(name = "list", help = "Get a list of workflows")
 def list_(
-        team_id:   Annotated[int,       Option(..., help = "Team ID"                                                 )] = None,
-        folder_id: Annotated[int,       Option(..., help = "Folder ID"                                               )] = None,
-        per_page:  Annotated[int,       Option(..., help = "Number of results per request"                           )] = None,
-        page:      Annotated[int,       Option(..., help = "Page number"                                             )] = None,
-        tags:      Annotated[List[str], Option(..., help = "A comma separated list of tag names to filter by"        )] = None,
+        team_id:   Annotated[int,       Option(..., help = "Team ID"                                                        )] = None,
+        folder_id: Annotated[int,       Option(..., help = "Folder ID"                                                      )] = None,
+        per_page:  Annotated[int,       Option(..., help = "Number of results per request"                                  )] = None,
+        page:      Annotated[int,       Option(..., help = "Page number"                                                    )] = None,
+        tags:      Annotated[List[str], Option(..., help = "A comma separated list of tag names to filter by"               )] = None,
         filter:    Annotated[str,       Option(..., click_type  = Choice(OPTIONS["FILTERS"]),        help = "Filter results")] = None,
         order:     Annotated[str,       Option(..., click_type  = Choice(OPTIONS["ORDER"]),          help = "Order results" )] = None,
         output_as: Annotated[str,       Option(..., click_type  = Choice(OPTIONS["OUTPUT_FORMAT"]),  help = "Format results")] = "table"
@@ -51,12 +60,15 @@ def list_(
             if output_as == "table":
                 table = PrettyTable()
                 table.field_names = ["Nr", "ID", "Name", "Description", "Mode", "Folder ID", "Team ID", "Status", "Created At", "Updated At", "Edited At"]
+                table.align["Name"] = "l"
+                table.align["Description"] = "l"
+
                 for index, story in enumerate(stories, 1):
                     table.add_row([
                         index,
                         story.get("id"),
-                        story.get("name"),
-                        f"{story.get("description")[:20]}..." if story.get("description") else "[ N/A ]",
+                        story.get("name") if len(story.get("name")) <= 20 else f"{story.get("name")[:20]}...",
+                        f"{story.get("description")[:20]}{"..." if len(story.get("description")) >= 20 else ""}" if story.get("description") else "[ N/A ]",
                         story.get("mode"),
                         story.get("folder_id"),
                         story.get("team_id"),
@@ -212,6 +224,76 @@ def runs_(
         print(f"    -> Status code: {status_code}")
         print(f"    -> Message: {req.get("body")}")
 
+@workflow_typer.command(name = "actions", help = "Get a list of actions")
+def actions_(
+        story_mode:  Annotated[str,       Option(..., help = "Story mode", click_type = Choice(["LIVE", "TEST"])                           )] = None,
+        team_id:     Annotated[int,       Option(..., help = "List actions for the given team"                                             )] = None,
+        group_id:    Annotated[int,       Option(..., help = "List actions for the given group"                                            )] = None,
+        entry_type:  Annotated[List[str], Option(..., help = "Sort by entry type", click_type= Choice(OPTIONS["ENTRY_TYPE"])               )] = None,
+        action_type: Annotated[str,       Option(..., help = "Filter actions by the given type", click_type = Choice(OPTIONS["AGENT_TYPE"]))] = None,
+        draft_id:    Annotated[int,       Option(..., help = "Return runs for a specific draft"                                            )] = None,
+        output_as:   Annotated[str,       Option(..., help = "Format results", click_type=Choice(OPTIONS["OUTPUT_FORMAT"])                 )] = "table",
+        per_page:    Annotated[int,       Option(..., help = "Set the number of results returned per page"                                 )] = 20,
+        page:        Annotated[int,       Option(..., help = "Specify the page of results to return if there are multiple pages"           )] = 1
+):
+    actions_api = ActionsAPI(OPTIONS["DOMAIN"], OPTIONS["API_KEY"])
+    req = actions_api.list(
+        story_id = OPTIONS["WORKFLOW_ID"], story_mode = story_mode,
+        team_id = team_id, group_id = group_id, action_type = action_type,
+        draft_id = draft_id, per_page = per_page,page = page
+    )
+
+    status_code = req.get("status_code")
+    actions = req.get("body").get("agents")
+
+    if status_code == 200:
+
+        if entry_type:
+            entry_types = {
+                "entry": lambda a: not a.get("sources"),
+                "transit": lambda a: a.get("sources") and a.get("receivers"),
+                "exit": lambda a: a.get("sources") and not a.get("receivers"),
+            }
+            actions = [action for action in actions if any(entry_types[ent](action) for ent in entry_type)]
+
+        if output_as == "table":
+            table = PrettyTable(
+                [
+                    "ID", "Type", "Name", "Description", "Source Actions",
+                    "Receiver Actions", "Entry Type", "Last Ran At"
+                ]
+            )
+
+            table.align["Source Actions"] = "l"
+            table.align["Receiver Actions"] = "l"
+            table.align["Type"] = "l"
+            table.align["Name"] = "l"
+
+            for action in actions:
+                sources   = "\n".join([f"{action.get("sources")[index: index + 4]}" for index in range(0, len(action.get("sources")), 4)])
+                receivers = "\n".join([f"{action.get("receivers")[index: index + 4]}" for index in range(0, len(action.get("receivers")), 4)])
+
+                table.add_row(
+                    [
+                        action.get("id"),
+                        action.get("type"),
+                        f"{action.get("name")[:20]}..." if len(action.get("name")) >= 20 else action.get("name"),
+                        f"{action.get("description")[:20]}{"..." if len(action.get("description")) >= 20 else ""}" if action.get("description") else "[ N/A ]",
+                        sources,
+                        receivers,
+                        "Entry" if not sources else "Transit" if sources and receivers else "Exit",
+                        action.get("last_event_at"),
+                    ],
+                )
+
+            print(table.get_string(sortby="Entry Type", ))
+            print(
+                f"|  Page: {page}  |  Page Size: {per_page}  "
+                f"|  Total Pages: {req.get("body").get("meta").get("pages")}  "
+                f"|  Total Actions: {req.get("body").get("meta").get("count")}  |"
+            )
+        elif output_as == "json":
+            print(dumps(actions, indent=4))
 
 @workflow_typer.callback()
 def callback(
@@ -221,11 +303,11 @@ def callback(
     OPTIONS["DOMAIN"]  = ctx.obj.get("DOMAIN")
     OPTIONS["API_KEY"] = ctx.obj.get("API_KEY")
 
-    if ctx.invoked_subcommand in ("list", "event", "events", "runs") and not ctx.obj.get("DOMAIN") or not ctx.obj.get("API_KEY"):
+    if not ctx.obj.get("DOMAIN") or not ctx.obj.get("API_KEY"):
         print("[-] You first need to checkout a tenant before using this command.")
         exit()
 
-    if ctx.invoked_subcommand in ("event", "events", "runs") and not wid:
+    if ctx.invoked_subcommand not in ("list",) and not wid:
         print("[-] Please provide the a workflow ID")
         print(f"    -> tines workflow --wid=<ID> {ctx.invoked_subcommand} (args) [flags] <switches>")
         exit()
