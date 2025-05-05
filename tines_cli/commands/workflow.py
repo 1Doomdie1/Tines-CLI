@@ -1,12 +1,11 @@
 from typing            import List
-from json              import dumps
 from click             import Choice
 from typer             import Option
 from typing_extensions import Annotated
 from prettytable       import PrettyTable
+from json              import dumps, dump
 from typer             import Typer, Context
 from tapi              import StoriesAPI, EventsAPI, RunsAPI, ActionsAPI
-
 
 workflow_typer = Typer(name = "workflow", help = "Manage workflows")
 
@@ -35,7 +34,8 @@ OPTIONS = {
         "Agents::FormAgent", " Agents::HTTPRequestAgent",
         "Agents::LLMAgent", "Agents::RunScriptAgent"
     ],
-    "ENTRY_TYPE": [ "entry", "transit", "exit" ]
+    "ENTRY_TYPE": [ "entry", "transit", "exit" ],
+    "EXPORTS_FOLDER": None
 }
 
 
@@ -324,13 +324,37 @@ def enable():
         print(f"    -> Status code: {status_code}")
         print(f"    -> Message: {req.get("body")}")
 
+@workflow_typer.command(help = "Export workflow")
+def export(
+        path:           Annotated[str,  Option(..., help = "Export path"                   )] = None,
+        randomize_urls: Annotated[bool, Option(..., help = "Randomize pages urls."         )] = None,
+        draft_id:       Annotated[int,  Option(..., help = "The ID of the draft to export.")] = None
+):
+    story_api = StoriesAPI(OPTIONS["DOMAIN"], OPTIONS["API_KEY"])
+    req = story_api.export(OPTIONS["WORKFLOW_ID"], randomize_urls = randomize_urls, draft_id = draft_id)
+    status_code = req.get("status_code")
+    story = req.get("body")
+    path = path if path else f"{OPTIONS["EXPORTS_FOLDER"]}\\{story.get("slug")}.json"
+
+
+    if status_code == 200:
+        with open(path, "w") as file:
+            dump(story, file, indent = 4)
+        print("[+] Story exported successfully")
+        print(f"    -> {path}")
+    else:
+        print(f"[!] Error encountered")
+        print(f"    -> Status code: {status_code}")
+        print(f"    -> Message: {req.get("body")}")
+
 @workflow_typer.callback()
 def callback(
         ctx: Context,
         wid: Annotated[int, Option(..., help = "Workflow ID")] = None
 ):
-    OPTIONS["DOMAIN"]  = ctx.obj.get("DOMAIN")
-    OPTIONS["API_KEY"] = ctx.obj.get("API_KEY")
+    OPTIONS["DOMAIN"]         = ctx.obj.get("DOMAIN")
+    OPTIONS["API_KEY"]        = ctx.obj.get("API_KEY")
+    OPTIONS["EXPORTS_FOLDER"] = ctx.obj.get("EXPORTS_FOLDER")
 
     if not ctx.obj.get("DOMAIN") or not ctx.obj.get("API_KEY"):
         print("[-] You first need to checkout a tenant before using this command.")
