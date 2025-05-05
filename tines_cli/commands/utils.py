@@ -1,13 +1,14 @@
 from requests          import get
 from json              import loads
-from os                import remove
 from typer             import Option
+from shutil            import rmtree
+from os                import remove
 from typing_extensions import Annotated
 from tines_cli         import __version__
 from subprocess        import Popen, PIPE
 from .envvars          import envvars_typer
 from typer             import Typer, Context
-from os.path           import join, dirname, abspath, exists
+from os.path           import join, dirname, abspath, exists, isfile
 
 
 utils_typer = Typer(name = "utils", help = "Utility commands")
@@ -20,14 +21,18 @@ def uninstall(
     print("[+] Uninstalling...")
 
     file_paths = [
-        join(dirname(dirname(abspath(__file__))), "tenants.json")
+        join(dirname(dirname(abspath(__file__))), "tenants.json"),
+        join(dirname(dirname(abspath(__file__))), "exports")
     ]
 
     print("[+] Removing files created by Tines-CLI")
     for path in file_paths:
         if verbose: print(f"{" " * 4}-> {path}", end=" ")
         if exists(path):
-            remove(path)
+            if isfile(path):
+                remove(path)
+            else:
+                rmtree(path, ignore_errors=True)
             if verbose: print(" - Done")
         else:
             if verbose: print(" - File not found")
