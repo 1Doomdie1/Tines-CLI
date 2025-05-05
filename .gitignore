@@ -176,4 +176,5 @@ cython_debug/
 
 # Other
 tines_cli/tenants.json
+tines_cli/exports/
 env_export.txt
