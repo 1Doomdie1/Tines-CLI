@@ -1,11 +1,11 @@
 from typing            import List
 from click             import Choice
-from typer             import Option
 from os.path           import join
 from typing_extensions import Annotated
 from prettytable       import PrettyTable
-from json              import dumps, dump
 from typer             import Typer, Context
+from typer             import Option, Argument
+from json              import dumps, dump, load
 from tapi              import StoriesAPI, EventsAPI, RunsAPI, ActionsAPI
 
 workflow_typer = Typer(name = "workflow", help = "Manage workflows")
@@ -36,7 +36,8 @@ OPTIONS = {
         "Agents::LLMAgent", "Agents::RunScriptAgent"
     ],
     "ENTRY_TYPE": [ "entry", "transit", "exit" ],
-    "EXPORTS_FOLDER": None
+    "EXPORTS_FOLDER": None,
+    "IMPORT_MODES": [ "new", "versionReplace" ]
 }
 
 
@@ -345,6 +346,46 @@ def export(
         print(f"    -> Status code: {status_code}")
         print(f"    -> Message: {req.get("body")}")
 
+@workflow_typer.command(name = "import", help = "Import workflow")
+def import_(
+        name:      Annotated[str,  Argument(..., help = "The new name for the story"                                                                 )],
+        path:      Annotated[str,  Argument(..., help = "Path to story"                                                                              )],
+        team_id:   Annotated[int,  Argument(..., help = "ID of team to which the story should be added"                                              )],
+        folder_id: Annotated[int,  Option  (..., help = "ID of folder to which the story should be added"                                            )] = None,
+        mode:      Annotated[str,  Option  (..., help = "Create a new story or update existing by Name", click_type = Choice(OPTIONS["IMPORT_MODES"]))] = "new",
+):
+    try:
+        with open(path, "r") as file:
+            story_data = load(file)
+    except Exception as e:
+        print(f"[!] Error encountered")
+        print(f"    -> Message: {e}")
+        exit()
+
+    story_api = StoriesAPI(OPTIONS["DOMAIN"], OPTIONS["API_KEY"])
+    req = story_api.import_(new_name = name, data = story_data, team_id = team_id, folder_id = folder_id, mode = mode)
+    status_code = req.get("status_code")
+
+    if status_code == 200:
+        print("[+] Story imported successfully")
+    else:
+        print(f"[!] Error encountered")
+        print(f"    -> Status code: {status_code}")
+        print(f"    -> Message: {req.get("body")}")
+
+@workflow_typer.command(help = "Delete workflow")
+def delete():
+    story_api = StoriesAPI(OPTIONS["DOMAIN"], OPTIONS["API_KEY"])
+    req = story_api.delete(story_id = OPTIONS["WORKFLOW_ID"])
+    status_code = req.get("status_code")
+
+    if status_code == 204:
+        print("[+] Story deleted successfully")
+    else:
+        print(f"[!] Error encountered")
+        print(f"    -> Status code: {status_code}")
+        print(f"    -> Message: {req.get("body")}")
+
 @workflow_typer.callback()
 def callback(
         ctx: Context,
@@ -358,7 +399,7 @@ def callback(
         print("[-] You first need to checkout a tenant before using this command.")
         exit()
 
-    if ctx.invoked_subcommand not in ("list",) and not wid:
+    if ctx.invoked_subcommand not in ("list", "import") and not wid:
         print("[-] Please provide the a workflow ID")
         print(f"    -> tines workflow --wid=<ID> {ctx.invoked_subcommand} (args) [flags] <switches>")
         exit()
