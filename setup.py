@@ -1,4 +1,5 @@
 from setuptools import setup
+from tines_cli import __version__
 
 with open("requirements.txt", "r") as f:
     req_list = f.read().split("\n")[:-1]
@@ -8,7 +9,7 @@ with open("README.md", "r", encoding="utf-8") as f:
 
 setup(
     name                          = "tines-cli",
-    version                       = "0.2.0",
+    version                       = __version__,
     description                   = "CLI tool to manage Tines tenants",
     long_description              = long_description,
     long_description_content_type = "text/markdown",

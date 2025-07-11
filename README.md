@@ -8,34 +8,49 @@ This project's core module is [tapi](https://github.com/1Doomdie1/tapi), a simpl
 ```commandline
 $> pip install git+https://github.com/1Doomdie1/Tines-CLI
 ```
+## Update tines-cli
 
+```commandline
+$> tines utils update
+```
 ## Getting started
 
 ### Add tenant
 ```commandline
-$> tines tenant add domain=my-tines-domain api_key=me_secret_key
+$> tines tenant add my-tines-domain my_secret_key
 
 [+] Tenant my-tines-domain has been added successfully
 ``` 
 
 ### Checkout tenant
 ```commandline
-$> tines tenant checkout --domain=my-tines-domain
+$> tines tenant checkout my-tines-domain
 
-[+] Now using the 'my-tines-domain' tenant
+[+] Successfully checked out tenant 'my-tines-domain'
 ```
 
 ### Tenant Info
 ```commandline
 $> tines tenant info
 
-+------+--------+-----------+-----------------------------+
-| Name |  Type  |   Region  |          Egress IPs         |
-+------+--------+-----------+-----------------------------+
-| us1  | shared | us-west-2 |  10.10.10.10, 10.10.10.11   |
-+------+--------+-----------+-----------------------------+
++-----------------+---------+--------+-----------+-----------------------------+
+|      Domain     | SV Name |  Type  |   Region  |          Egress IPs         |
++-----------------+---------+--------+-----------+-----------------------------+
+| my-tines-domain |   us1   | shared | us-west-2 |  10.10.10.10, 10.10.10.11   |
++-----------------+---------+--------+-----------+-----------------------------+
 ```
 
+### List all tenant saved locally
+```commandline
+$> tines tenant list
+
++----+------------------+--------+
+| Nr |      Domain      | In use |
++----+------------------+--------+
+| 1  |  my-cool-domain  |   ✗    |
+| 2  |  my-tines-domain |   ✓    |
++----+------------------+--------+
+```
 ### Find out more.
 At any point you can use the `--help` flag and get information on what commands/args/options you have access to, so don't hesitate to use it.
 
@@ -43,25 +58,41 @@ At any point you can use the `--help` flag and get information on what commands/
 
 ### Adding the following commands:
 
+#### Utils
+- [x] tines utils uninstall
+- [x] tines utils update
+- [x] tines utils versions
+- [x] tines utils envars
+
 #### Tenant
-- [ ] tines tenant logs
-- [ ] tines tenant invite
-- [ ] tines tenant remove-member
+
+- [x] tines tenant add \[DOMAIN\] \[API_KEY\]
+- [x] tines tenant checkout \[DOMAIN\]
+- [x] tines tenant info
+- [x] tines tenant list
+- [x] tines tenant delete \[DOMAIN\]
+- [ ] tines tenant invite \[EMAIL\]
+- [ ] tines tenant remove-member \[USER_ID\]
 
 #### Workflows
-- [ ] tines workflow get
-- [ ] tines workflow list
-- [ ] tines workflow logs
-- [ ] tines workflow import
-- [ ] tines workflow export
+- [x] tines workflow list
+- [x] tines workflow --wid=\[WORKFLOW_ID\] events
+- [x] tines workflow --wid=\[WORKFLOW_ID\] event
+- [x] tines workflow --wid=\[WORKFLOW_ID\] runs
+- [x] tines workflow --wid=\[WORKFLOW_ID\] actions
+- [x] tines workflow --wid=\[WORKFLOW_ID\] disable
+- [x] tines workflow --wid=\[WORKFLOW_ID\] enable
+- [x] tines workflow import \[NAME\] \[PATH/TO/JSON\] \[TEAM_ID\]
+- [x] tines workflow --wid=\[WORKFLOW_ID\] export
+- [x] tines workflow --wid=\[WORKFLOW_ID\] delete
 
 #### Teams
-- [ ] tines team add
+- [ ] tines team add [TEAM_NAME\]
 - [ ] tines team list
-- [ ] tines team delete
-- [ ] tines team invite
-- [ ] tines team remove
-- [ ] tines team set-name
+- [ ] tines team delete \[TEAM_ID\]
+- [ ] tines team --tid=\[TEAM_ID\] invite \[EMAIL\]
+- [ ] tines team --tid=\[TEAM_ID\] remove \[USER_ID\]
+- [ ] tines team --tid=\[TEAM_ID\] set-name \[NEW_NAME\]
 
 ### Improvements
 

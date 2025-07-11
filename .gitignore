@@ -50,6 +50,7 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 cover/
+test.py
 
 # Translations
 *.mo
@@ -129,7 +130,7 @@ celerybeat.pid
 
 # Environments
 .env
-.venv
+.venv*
 env/
 venv/
 ENV/
@@ -175,4 +176,5 @@ cython_debug/
 
 # Other
 tines_cli/tenants.json
+tines_cli/exports/
 env_export.txt
